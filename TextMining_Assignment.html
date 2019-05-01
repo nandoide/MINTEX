@@ -13123,7 +13123,7 @@ div#notebook {
 <script>
 $( document ).ready(function(){
 
-            var cfg = {"base_numbering": 1, "nav_menu": {}, "number_sections": true, "sideBar": true, "skip_h1_title": false, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {"height": "calc(100% - 180px)", "left": "10px", "top": "150px", "width": "308.833px"}, "toc_section_display": true, "toc_window_display": true};
+            var cfg = {"base_numbering": 1, "nav_menu": {}, "number_sections": true, "sideBar": true, "skip_h1_title": false, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {"height": "calc(100% - 180px)", "left": "10px", "top": "150px", "width": "308.828125px"}, "toc_section_display": true, "toc_window_display": true};
 
             // fire the main function with these parameters
             require(['nbextensions/toc2/toc2'], function (toc2) {
@@ -13144,7 +13144,7 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[405]:</div>
+<div class="prompt input_prompt">In&nbsp;[609]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">warnings</span>
@@ -13152,7 +13152,7 @@ $( document ).ready(function(){
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="o">%</span><span class="k">matplotlib</span> inline
 <span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="k">import</span> <span class="n">CountVectorizer</span>
 <span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="k">import</span> <span class="n">TfidfTransformer</span>
@@ -13173,6 +13173,10 @@ $( document ).ready(function(){
 <span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="k">import</span> <span class="n">KNeighborsClassifier</span>
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">tree</span>
 <span class="kn">from</span> <span class="nn">sklearn.feature_extraction</span> <span class="k">import</span> <span class="n">stop_words</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="k">import</span> <span class="n">TransformerMixin</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="k">import</span> <span class="n">KMeans</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">calinski_harabaz_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">Normalizer</span><span class="p">,</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">OneHotEncoder</span>
 
 <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span>
 </pre></div>
@@ -13184,11 +13188,11 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[351]:</div>
+<div class="prompt input_prompt">In&nbsp;[610]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Data loading</span>
-<span class="n">NROWS</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">NROWS</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span>
 <span class="c1">## Negative dataset</span>
 <span class="n">df_neg</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./practica_clase/PRECISION_MEDICINE/negative_training_abstracts.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> 
                      <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nrows</span> <span class="o">=</span> <span class="n">NROWS</span><span class="p">)</span>
@@ -13458,7 +13462,7 @@ $( document ).ready(function(){
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>100 100
+<pre>8156 8156
 </pre>
 </div>
 </div>
@@ -13476,7 +13480,7 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[352]:</div>
+<div class="prompt input_prompt">In&nbsp;[611]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">TEST_SIZE</span> <span class="o">=</span> <span class="mf">0.33</span>
@@ -13559,7 +13563,7 @@ screen captures.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[363]:</div>
+<div class="prompt input_prompt">In&nbsp;[470]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_top_n_words</span><span class="p">(</span><span class="n">corpus</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -13597,23 +13601,39 @@ screen captures.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[439]:</div>
+<div class="prompt input_prompt">In&nbsp;[527]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">CLASSIFIERS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;knn&#39;</span><span class="p">,</span> <span class="s1">&#39;dtree&#39;</span><span class="p">,</span> <span class="s1">&#39;nb&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">,</span> <span class="s1">&#39;svc&#39;</span><span class="p">,</span> <span class="s1">&#39;lsvc&#39;</span><span class="p">]</span>
+<span class="n">CLASSIFIERS_FROM_CLUSTERS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;kmeans&#39;</span><span class="p">]</span>
 <span class="n">REDUCERS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;svd&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
 <span class="n">CV</span> <span class="o">=</span> <span class="mi">4</span>
 
+<span class="k">class</span> <span class="nc">KMeans_foo</span><span class="p">(</span><span class="n">KMeans</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Transformer</span><span class="p">(</span><span class="n">TransformerMixin</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="o">**</span><span class="n">transform_params</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+    
 <span class="k">def</span> <span class="nf">create_text_pipeline</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="s1">&#39;svd&#39;</span><span class="p">,</span> <span class="n">classifier</span><span class="o">=</span><span class="s2">&quot;nb&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Create text vectorization pipeline with optional dimensionality reduction&quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="n">reducer</span> <span class="ow">in</span> <span class="n">REDUCERS</span><span class="p">,</span> <span class="s2">&quot;ERROR: Reducer </span><span class="si">%s</span><span class="s2"> not supported, only </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">reducer</span><span class="p">,</span> <span class="n">REDUCERS</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">classifier</span> <span class="ow">in</span> <span class="n">CLASSIFIERS</span><span class="p">,</span> <span class="s2">&quot;ERROR: Classifier </span><span class="si">%s</span><span class="s2"> not supported, only </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">CLASSIFIERS</span><span class="p">)</span>
-    <span class="n">num_comp</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="k">assert</span> <span class="n">classifier</span> <span class="ow">in</span> <span class="n">CLASSIFIERS</span> <span class="o">+</span> <span class="n">CLASSIFIERS_FROM_CLUSTERS</span><span class="p">,</span>\
+        <span class="s2">&quot;ERROR: Classifier </span><span class="si">%s</span><span class="s2"> not supported, only </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">CLASSIFIERS</span> <span class="o">+</span> <span class="n">CLASSIFIERS_FROM_CLUSTERS</span><span class="p">)</span>
     <span class="n">pipeline</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s1">&#39;vect&#39;</span><span class="p">,</span> <span class="n">TfidfVectorizer</span><span class="p">()),</span>
         <span class="p">(</span><span class="s1">&#39;scaler&#39;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">())</span>
     <span class="p">]</span>
-
+    <span class="n">num_comp</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="c1"># Reduce dimensions</span>
     <span class="k">if</span> <span class="n">reducer</span> <span class="o">==</span> <span class="s1">&#39;svd&#39;</span><span class="p">:</span>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;red_svd&#39;</span><span class="p">,</span> <span class="n">TruncatedSVD</span><span class="p">()))</span>
@@ -13641,11 +13661,16 @@ screen captures.</p>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;clf_&#39;</span> <span class="o">+</span> <span class="n">classifier</span><span class="p">,</span> <span class="n">DecisionTreeClassifier</span><span class="p">()))</span> 
     <span class="k">elif</span> <span class="n">classifier</span> <span class="o">==</span> <span class="s2">&quot;knn&quot;</span><span class="p">:</span>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;clf_&#39;</span> <span class="o">+</span> <span class="n">classifier</span><span class="p">,</span> <span class="n">KNeighborsClassifier</span><span class="p">()))</span>    
-        <span class="n">KNeighborsClassifier</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">classifier</span> <span class="o">==</span> <span class="s2">&quot;kmeans&quot;</span><span class="p">:</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;normalizer&#39;</span><span class="p">,</span> <span class="n">Normalizer</span><span class="p">()))</span>
+        <span class="c1">#pipeline.append((&#39;cluster_kmeans&#39; + classifier, Transformer(KMeans_foo(2))))</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;cluster_kmeans&#39;</span><span class="p">,</span> <span class="n">KMeans</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;one_hot_encoder&#39;</span><span class="p">,</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span>
+        <span class="c1">#pipeline.append((&#39;binarize&#39;, LabelBinarizer()))</span>
     <span class="k">elif</span> <span class="n">classifier</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
     
-    <span class="c1">#print(&quot;Pipeline&quot;, pipeline)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pipeline&quot;</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Pipeline</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">prediction_metrics</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="s2">&quot;svd&quot;</span><span class="p">,</span> <span class="n">classifier</span><span class="o">=</span><span class="s2">&quot;nb&quot;</span><span class="p">):</span>
@@ -13660,7 +13685,12 @@ screen captures.</p>
             <span class="n">filtered_params</span><span class="p">[</span><span class="n">param_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="n">param_key</span><span class="p">]</span>
     <span class="n">pipeline</span><span class="o">.</span><span class="n">set_params</span><span class="p">(</span><span class="o">**</span><span class="n">filtered_params</span><span class="p">)</span>
     <span class="n">pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-    <span class="n">predicted</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">classifier</span> <span class="o">==</span> <span class="s2">&quot;kmeans&quot;</span><span class="p">:</span>
+        <span class="n">predicted</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">predicted</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">y_test</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">predicted</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
     
@@ -13715,7 +13745,7 @@ screen captures.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[446]:</div>
+<div class="prompt input_prompt">In&nbsp;[498]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># First set of parameters</span>
@@ -13723,7 +13753,7 @@ screen captures.</p>
     <span class="s1">&#39;vect__norm&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
     <span class="s1">&#39;vect__smooth_idf&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="s1">&#39;vect__sublinear_tf&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;vect__max_features&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="s1">&#39;vect__max_features&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
     <span class="s1">&#39;vect__min_df&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
     <span class="s1">&#39;vect__stop_words&#39;</span><span class="p">:</span> <span class="s1">&#39;english&#39;</span><span class="p">,</span>
     <span class="s1">&#39;vect__strip_accents&#39;</span> <span class="p">:</span> <span class="s1">&#39;unicode&#39;</span><span class="p">,</span>
@@ -13762,39 +13792,39 @@ screen captures.</p>
 <pre>### Reducer: svd   Classifier: knn
               precision    recall  f1-score   support
 
-           0       0.67      0.93      0.78        15
-           1       0.92      0.61      0.73        18
+           0       0.68      1.00      0.81        15
+           1       1.00      0.61      0.76        18
 
-   micro avg       0.76      0.76      0.76        33
-   macro avg       0.79      0.77      0.76        33
-weighted avg       0.80      0.76      0.75        33
+   micro avg       0.79      0.79      0.79        33
+   macro avg       0.84      0.81      0.78        33
+weighted avg       0.86      0.79      0.78        33
 
-[[14  1]
+[[15  0]
  [ 7 11]]
 ### Reducer: None   Classifier: knn
               precision    recall  f1-score   support
 
-           0       0.79      1.00      0.88        15
-           1       1.00      0.78      0.88        18
+           0       0.60      1.00      0.75        15
+           1       1.00      0.44      0.62        18
 
-   micro avg       0.88      0.88      0.88        33
-   macro avg       0.89      0.89      0.88        33
-weighted avg       0.90      0.88      0.88        33
+   micro avg       0.70      0.70      0.70        33
+   macro avg       0.80      0.72      0.68        33
+weighted avg       0.82      0.70      0.68        33
 
 [[15  0]
- [ 4 14]]
+ [10  8]]
 ### Reducer: svd   Classifier: dtree
               precision    recall  f1-score   support
 
-           0       0.92      0.80      0.86        15
-           1       0.85      0.94      0.89        18
+           0       0.83      1.00      0.91        15
+           1       1.00      0.83      0.91        18
 
-   micro avg       0.88      0.88      0.88        33
-   macro avg       0.89      0.87      0.88        33
-weighted avg       0.88      0.88      0.88        33
+   micro avg       0.91      0.91      0.91        33
+   macro avg       0.92      0.92      0.91        33
+weighted avg       0.92      0.91      0.91        33
 
-[[12  3]
- [ 1 17]]
+[[15  0]
+ [ 3 15]]
 ### Reducer: None   Classifier: dtree
               precision    recall  f1-score   support
 
@@ -13810,14 +13840,14 @@ weighted avg       0.95      0.94      0.94        33
 ### Reducer: svd   Classifier: nb
               precision    recall  f1-score   support
 
-           0       0.82      0.93      0.87        15
-           1       0.94      0.83      0.88        18
+           0       0.83      1.00      0.91        15
+           1       1.00      0.83      0.91        18
 
-   micro avg       0.88      0.88      0.88        33
-   macro avg       0.88      0.88      0.88        33
-weighted avg       0.89      0.88      0.88        33
+   micro avg       0.91      0.91      0.91        33
+   macro avg       0.92      0.92      0.91        33
+weighted avg       0.92      0.91      0.91        33
 
-[[14  1]
+[[15  0]
  [ 3 15]]
 ### Reducer: None   Classifier: nb
               precision    recall  f1-score   support
@@ -13834,27 +13864,27 @@ weighted avg       0.91      0.91      0.91        33
 ### Reducer: svd   Classifier: lr
               precision    recall  f1-score   support
 
-           0       0.81      0.87      0.84        15
-           1       0.88      0.83      0.86        18
+           0       0.94      1.00      0.97        15
+           1       1.00      0.94      0.97        18
 
-   micro avg       0.85      0.85      0.85        33
-   macro avg       0.85      0.85      0.85        33
-weighted avg       0.85      0.85      0.85        33
+   micro avg       0.97      0.97      0.97        33
+   macro avg       0.97      0.97      0.97        33
+weighted avg       0.97      0.97      0.97        33
 
-[[13  2]
- [ 3 15]]
+[[15  0]
+ [ 1 17]]
 ### Reducer: None   Classifier: lr
               precision    recall  f1-score   support
 
-           0       0.87      0.87      0.87        15
-           1       0.89      0.89      0.89        18
+           0       0.93      0.87      0.90        15
+           1       0.89      0.94      0.92        18
 
-   micro avg       0.88      0.88      0.88        33
-   macro avg       0.88      0.88      0.88        33
-weighted avg       0.88      0.88      0.88        33
+   micro avg       0.91      0.91      0.91        33
+   macro avg       0.91      0.91      0.91        33
+weighted avg       0.91      0.91      0.91        33
 
 [[13  2]
- [ 2 16]]
+ [ 1 17]]
 ### Reducer: svd   Classifier: svc
               precision    recall  f1-score   support
 
@@ -13870,39 +13900,39 @@ weighted avg       0.21      0.45      0.28        33
 ### Reducer: None   Classifier: svc
               precision    recall  f1-score   support
 
-           0       0.87      0.87      0.87        15
-           1       0.89      0.89      0.89        18
+           0       0.93      0.87      0.90        15
+           1       0.89      0.94      0.92        18
 
-   micro avg       0.88      0.88      0.88        33
-   macro avg       0.88      0.88      0.88        33
-weighted avg       0.88      0.88      0.88        33
+   micro avg       0.91      0.91      0.91        33
+   macro avg       0.91      0.91      0.91        33
+weighted avg       0.91      0.91      0.91        33
 
 [[13  2]
- [ 2 16]]
+ [ 1 17]]
 ### Reducer: svd   Classifier: lsvc
               precision    recall  f1-score   support
 
-           0       0.81      0.87      0.84        15
-           1       0.88      0.83      0.86        18
+           0       0.93      0.93      0.93        15
+           1       0.94      0.94      0.94        18
 
-   micro avg       0.85      0.85      0.85        33
-   macro avg       0.85      0.85      0.85        33
-weighted avg       0.85      0.85      0.85        33
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.94      0.94      0.94        33
+weighted avg       0.94      0.94      0.94        33
 
-[[13  2]
- [ 3 15]]
+[[14  1]
+ [ 1 17]]
 ### Reducer: None   Classifier: lsvc
               precision    recall  f1-score   support
 
-           0       0.81      0.87      0.84        15
-           1       0.88      0.83      0.86        18
+           0       0.93      0.87      0.90        15
+           1       0.89      0.94      0.92        18
 
-   micro avg       0.85      0.85      0.85        33
-   macro avg       0.85      0.85      0.85        33
-weighted avg       0.85      0.85      0.85        33
+   micro avg       0.91      0.91      0.91        33
+   macro avg       0.91      0.91      0.91        33
+weighted avg       0.91      0.91      0.91        33
 
 [[13  2]
- [ 3 15]]
+ [ 1 17]]
 </pre>
 </div>
 </div>
@@ -13920,20 +13950,7 @@ weighted avg       0.85      0.85      0.85        33
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[445]:</div>
+<div class="prompt input_prompt">In&nbsp;[462]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">parameters_grid</span> <span class="o">=</span> <span class="p">{</span>
@@ -13952,8 +13969,8 @@ weighted avg       0.85      0.85      0.85        33
     <span class="s1">&#39;vect__norm&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;l1&#39;</span><span class="p">,</span> <span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
     <span class="s1">&#39;vect__smooth_idf&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">],</span>
     <span class="s1">&#39;vect__sublinear_tf&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">],</span>
-    <span class="s1">&#39;vect__max_features&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
-    <span class="s1">&#39;vect__min_df&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],</span>
+    <span class="s1">&#39;vect__max_features&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">900</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+    <span class="s1">&#39;vect__min_df&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
     <span class="c1">#&#39;vect__max_df&#39;: [7,8],</span>
     <span class="s1">&#39;vect__stop_words&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;english&#39;</span><span class="p">,</span> <span class="n">eng_and_custom_stopwords</span><span class="p">],</span>
     <span class="s1">&#39;vect__strip_accents&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;unicode&#39;</span><span class="p">],</span>
@@ -13961,7 +13978,7 @@ weighted avg       0.85      0.85      0.85        33
     <span class="s1">&#39;vect__token_pattern&#39;</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;\w{1,}&#39;</span><span class="p">],</span> 
     <span class="s1">&#39;vect__ngram_range&#39;</span> <span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span>
     <span class="s1">&#39;scaler__with_mean&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="kc">False</span><span class="p">],</span>
-    <span class="s1">&#39;red_svd__n_components&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span>
+    <span class="s1">&#39;red_svd__n_components&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span>
     <span class="s1">&#39;clf_knn__n_neighbors&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
 <span class="p">}</span>
 
@@ -13984,84 +14001,62 @@ weighted avg       0.85      0.85      0.85        33
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>### Reducer: svd   Classifier: knn
+<pre>448
+### Reducer: svd   Classifier: knn
 	clf_knn__n_neighbors: 5
 	red_svd__n_components: 2
 	scaler__with_mean: False
 	vect__analyzer: &#39;word&#39;
-	vect__max_features: 30
-	vect__min_df: 6
-	vect__ngram_range: (1, 2)
-	vect__norm: None
-	vect__smooth_idf: True
-	vect__stop_words: &#39;english&#39;
-	vect__strip_accents: &#39;unicode&#39;
-	vect__sublinear_tf: True
-	vect__token_pattern: &#39;\\w{1,}&#39;
-              precision    recall  f1-score   support
-
-           0       0.88      0.93      0.90        15
-           1       0.94      0.89      0.91        18
-
-   micro avg       0.91      0.91      0.91        33
-   macro avg       0.91      0.91      0.91        33
-weighted avg       0.91      0.91      0.91        33
-
-[[14  1]
- [ 2 16]]
-### Reducer: None   Classifier: knn
-	clf_knn__n_neighbors: 5
-	scaler__with_mean: False
-	vect__analyzer: &#39;word&#39;
-	vect__max_features: 50
+	vect__max_features: 900
 	vect__min_df: 5
 	vect__ngram_range: (1, 2)
 	vect__norm: &#39;l2&#39;
 	vect__smooth_idf: True
-	vect__stop_words: &#39;english&#39;
+	vect__stop_words: None
 	vect__strip_accents: &#39;unicode&#39;
 	vect__sublinear_tf: True
 	vect__token_pattern: &#39;\\w{1,}&#39;
               precision    recall  f1-score   support
 
-           0       0.88      0.93      0.90        15
-           1       0.94      0.89      0.91        18
+           0       0.96      0.91      0.93       163
+           1       0.92      0.96      0.94       167
 
-   micro avg       0.91      0.91      0.91        33
-   macro avg       0.91      0.91      0.91        33
-weighted avg       0.91      0.91      0.91        33
+   micro avg       0.94      0.94      0.94       330
+   macro avg       0.94      0.94      0.94       330
+weighted avg       0.94      0.94      0.94       330
 
-[[14  1]
- [ 2 16]]
-### Reducer: svd   Classifier: dtree
-	red_svd__n_components: 2
+[[149  14]
+ [  7 160]]
+### Reducer: None   Classifier: knn
+	clf_knn__n_neighbors: 5
 	scaler__with_mean: False
 	vect__analyzer: &#39;word&#39;
-	vect__max_features: 30
+	vect__max_features: 1000
 	vect__min_df: 6
 	vect__ngram_range: (1, 2)
-	vect__norm: None
+	vect__norm: &#39;l2&#39;
 	vect__smooth_idf: True
-	vect__stop_words: &#39;english&#39;
+	vect__stop_words: None
 	vect__strip_accents: &#39;unicode&#39;
 	vect__sublinear_tf: True
 	vect__token_pattern: &#39;\\w{1,}&#39;
               precision    recall  f1-score   support
 
-           0       0.93      0.87      0.90        15
-           1       0.89      0.94      0.92        18
+           0       0.94      0.93      0.94       163
+           1       0.93      0.95      0.94       167
 
-   micro avg       0.91      0.91      0.91        33
-   macro avg       0.91      0.91      0.91        33
-weighted avg       0.91      0.91      0.91        33
+   micro avg       0.94      0.94      0.94       330
+   macro avg       0.94      0.94      0.94       330
+weighted avg       0.94      0.94      0.94       330
 
-[[13  2]
- [ 1 17]]
-### Reducer: None   Classifier: dtree
+[[152  11]
+ [  9 158]]
+### Reducer: svd   Classifier: dtree
+	red_svd__n_components: 30
 	scaler__with_mean: False
 	vect__analyzer: &#39;word&#39;
-	vect__max_features: 30
-	vect__min_df: 5
+	vect__max_features: 1000
+	vect__min_df: 6
 	vect__ngram_range: (1, 2)
 	vect__norm: &#39;l1&#39;
 	vect__smooth_idf: True
@@ -14071,43 +14066,66 @@ weighted avg       0.91      0.91      0.91        33
 	vect__token_pattern: &#39;\\w{1,}&#39;
               precision    recall  f1-score   support
 
-           0       0.92      0.80      0.86        15
-           1       0.85      0.94      0.89        18
+           0       0.94      0.92      0.93       163
+           1       0.92      0.94      0.93       167
 
-   micro avg       0.88      0.88      0.88        33
-   macro avg       0.89      0.87      0.88        33
-weighted avg       0.88      0.88      0.88        33
+   micro avg       0.93      0.93      0.93       330
+   macro avg       0.93      0.93      0.93       330
+weighted avg       0.93      0.93      0.93       330
 
-[[12  3]
- [ 1 17]]
-### Reducer: svd   Classifier: nb
-	red_svd__n_components: 2
+[[150  13]
+ [ 10 157]]
+### Reducer: None   Classifier: dtree
 	scaler__with_mean: False
 	vect__analyzer: &#39;word&#39;
-	vect__max_features: 30
-	vect__min_df: 5
+	vect__max_features: 900
+	vect__min_df: 6
 	vect__ngram_range: (1, 2)
-	vect__norm: &#39;l2&#39;
+	vect__norm: None
 	vect__smooth_idf: True
-	vect__stop_words: &#39;english&#39;
+	vect__stop_words: None
 	vect__strip_accents: &#39;unicode&#39;
 	vect__sublinear_tf: True
 	vect__token_pattern: &#39;\\w{1,}&#39;
               precision    recall  f1-score   support
 
-           0       0.82      0.93      0.87        15
-           1       0.94      0.83      0.88        18
+           0       0.83      0.84      0.83       163
+           1       0.84      0.83      0.83       167
 
-   micro avg       0.88      0.88      0.88        33
-   macro avg       0.88      0.88      0.88        33
-weighted avg       0.89      0.88      0.88        33
+   micro avg       0.83      0.83      0.83       330
+   macro avg       0.83      0.83      0.83       330
+weighted avg       0.83      0.83      0.83       330
 
-[[14  1]
- [ 3 15]]
+[[137  26]
+ [ 29 138]]
+### Reducer: svd   Classifier: nb
+	red_svd__n_components: 30
+	scaler__with_mean: False
+	vect__analyzer: &#39;word&#39;
+	vect__max_features: 1000
+	vect__min_df: 5
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l2&#39;
+	vect__smooth_idf: True
+	vect__stop_words: None
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+              precision    recall  f1-score   support
+
+           0       0.95      0.96      0.96       163
+           1       0.96      0.95      0.96       167
+
+   micro avg       0.96      0.96      0.96       330
+   macro avg       0.96      0.96      0.96       330
+weighted avg       0.96      0.96      0.96       330
+
+[[157   6]
+ [  8 159]]
 ### Reducer: None   Classifier: nb
 	scaler__with_mean: False
 	vect__analyzer: &#39;word&#39;
-	vect__max_features: 50
+	vect__max_features: 1000
 	vect__min_df: 6
 	vect__ngram_range: (1, 2)
 	vect__norm: &#39;l2&#39;
@@ -14118,114 +14136,90 @@ weighted avg       0.89      0.88      0.88        33
 	vect__token_pattern: &#39;\\w{1,}&#39;
               precision    recall  f1-score   support
 
-           0       0.93      0.87      0.90        15
-           1       0.89      0.94      0.92        18
+           0       0.97      0.88      0.92       163
+           1       0.89      0.97      0.93       167
 
-   micro avg       0.91      0.91      0.91        33
-   macro avg       0.91      0.91      0.91        33
-weighted avg       0.91      0.91      0.91        33
+   micro avg       0.92      0.92      0.92       330
+   macro avg       0.93      0.92      0.92       330
+weighted avg       0.93      0.92      0.92       330
 
-[[13  2]
- [ 1 17]]
+[[143  20]
+ [  5 162]]
 ### Reducer: svd   Classifier: lr
-	red_svd__n_components: 2
+	red_svd__n_components: 40
 	scaler__with_mean: False
 	vect__analyzer: &#39;word&#39;
-	vect__max_features: 50
-	vect__min_df: 6
+	vect__max_features: 900
+	vect__min_df: 5
 	vect__ngram_range: (1, 2)
 	vect__norm: &#39;l2&#39;
 	vect__smooth_idf: True
-	vect__stop_words: &#39;english&#39;
+	vect__stop_words: None
 	vect__strip_accents: &#39;unicode&#39;
 	vect__sublinear_tf: True
 	vect__token_pattern: &#39;\\w{1,}&#39;
               precision    recall  f1-score   support
 
-           0       0.93      0.93      0.93        15
-           1       0.94      0.94      0.94        18
+           0       0.97      0.95      0.96       163
+           1       0.95      0.97      0.96       167
 
-   micro avg       0.94      0.94      0.94        33
-   macro avg       0.94      0.94      0.94        33
-weighted avg       0.94      0.94      0.94        33
+   micro avg       0.96      0.96      0.96       330
+   macro avg       0.96      0.96      0.96       330
+weighted avg       0.96      0.96      0.96       330
 
-[[14  1]
- [ 1 17]]
+[[155   8]
+ [  5 162]]
 ### Reducer: None   Classifier: lr
 	scaler__with_mean: False
 	vect__analyzer: &#39;word&#39;
-	vect__max_features: 30
-	vect__min_df: 5
+	vect__max_features: 1000
+	vect__min_df: 6
 	vect__ngram_range: (1, 2)
-	vect__norm: None
+	vect__norm: &#39;l2&#39;
 	vect__smooth_idf: True
-	vect__stop_words: &#39;english&#39;
+	vect__stop_words: None
 	vect__strip_accents: &#39;unicode&#39;
 	vect__sublinear_tf: True
 	vect__token_pattern: &#39;\\w{1,}&#39;
               precision    recall  f1-score   support
 
-           0       0.93      0.87      0.90        15
-           1       0.89      0.94      0.92        18
+           0       0.98      0.94      0.96       163
+           1       0.94      0.98      0.96       167
 
-   micro avg       0.91      0.91      0.91        33
-   macro avg       0.91      0.91      0.91        33
-weighted avg       0.91      0.91      0.91        33
+   micro avg       0.96      0.96      0.96       330
+   macro avg       0.96      0.96      0.96       330
+weighted avg       0.96      0.96      0.96       330
 
-[[13  2]
- [ 1 17]]
+[[153  10]
+ [  3 164]]
 ### Reducer: svd   Classifier: svc
-	red_svd__n_components: 3
+	red_svd__n_components: 40
 	scaler__with_mean: False
 	vect__analyzer: &#39;word&#39;
-	vect__max_features: 30
+	vect__max_features: 900
 	vect__min_df: 5
 	vect__ngram_range: (1, 2)
 	vect__norm: &#39;l2&#39;
 	vect__smooth_idf: True
-	vect__stop_words: &#39;english&#39;
+	vect__stop_words: None
 	vect__strip_accents: &#39;unicode&#39;
 	vect__sublinear_tf: True
 	vect__token_pattern: &#39;\\w{1,}&#39;
               precision    recall  f1-score   support
 
-           0       0.88      0.93      0.90        15
-           1       0.94      0.89      0.91        18
+           0       0.97      0.94      0.96       163
+           1       0.95      0.98      0.96       167
 
-   micro avg       0.91      0.91      0.91        33
-   macro avg       0.91      0.91      0.91        33
-weighted avg       0.91      0.91      0.91        33
+   micro avg       0.96      0.96      0.96       330
+   macro avg       0.96      0.96      0.96       330
+weighted avg       0.96      0.96      0.96       330
 
-[[14  1]
- [ 2 16]]
+[[154   9]
+ [  4 163]]
 ### Reducer: None   Classifier: svc
 	scaler__with_mean: False
 	vect__analyzer: &#39;word&#39;
-	vect__max_features: 30
-	vect__min_df: 5
-	vect__ngram_range: (1, 2)
-	vect__norm: None
-	vect__smooth_idf: True
-	vect__stop_words: &#39;english&#39;
-	vect__strip_accents: &#39;unicode&#39;
-	vect__sublinear_tf: True
-	vect__token_pattern: &#39;\\w{1,}&#39;
-              precision    recall  f1-score   support
-
-           0       0.94      1.00      0.97        15
-           1       1.00      0.94      0.97        18
-
-   micro avg       0.97      0.97      0.97        33
-   macro avg       0.97      0.97      0.97        33
-weighted avg       0.97      0.97      0.97        33
-
-[[15  0]
- [ 1 17]]
-### Reducer: svd   Classifier: lsvc
-	red_svd__n_components: 3
-	scaler__with_mean: False
-	vect__analyzer: &#39;word&#39;
-	vect__max_features: 30
+	vect__max_features: 900
 	vect__min_df: 6
 	vect__ngram_range: (1, 2)
 	vect__norm: None
@@ -14236,38 +14230,62 @@ weighted avg       0.97      0.97      0.97        33
 	vect__token_pattern: &#39;\\w{1,}&#39;
               precision    recall  f1-score   support
 
-           0       0.88      0.93      0.90        15
-           1       0.94      0.89      0.91        18
+           0       0.97      0.94      0.96       163
+           1       0.95      0.98      0.96       167
 
-   micro avg       0.91      0.91      0.91        33
-   macro avg       0.91      0.91      0.91        33
-weighted avg       0.91      0.91      0.91        33
+   micro avg       0.96      0.96      0.96       330
+   macro avg       0.96      0.96      0.96       330
+weighted avg       0.96      0.96      0.96       330
 
-[[14  1]
- [ 2 16]]
-### Reducer: None   Classifier: lsvc
+[[154   9]
+ [  4 163]]
+### Reducer: svd   Classifier: lsvc
+	red_svd__n_components: 40
 	scaler__with_mean: False
 	vect__analyzer: &#39;word&#39;
-	vect__max_features: 30
+	vect__max_features: 900
 	vect__min_df: 5
 	vect__ngram_range: (1, 2)
-	vect__norm: None
+	vect__norm: &#39;l1&#39;
 	vect__smooth_idf: True
-	vect__stop_words: &#39;english&#39;
+	vect__stop_words: None
 	vect__strip_accents: &#39;unicode&#39;
 	vect__sublinear_tf: True
 	vect__token_pattern: &#39;\\w{1,}&#39;
               precision    recall  f1-score   support
 
-           0       0.93      0.87      0.90        15
-           1       0.89      0.94      0.92        18
+           0       0.96      0.96      0.96       163
+           1       0.96      0.96      0.96       167
 
-   micro avg       0.91      0.91      0.91        33
-   macro avg       0.91      0.91      0.91        33
-weighted avg       0.91      0.91      0.91        33
+   micro avg       0.96      0.96      0.96       330
+   macro avg       0.96      0.96      0.96       330
+weighted avg       0.96      0.96      0.96       330
 
-[[13  2]
- [ 1 17]]
+[[156   7]
+ [  6 161]]
+### Reducer: None   Classifier: lsvc
+	scaler__with_mean: False
+	vect__analyzer: &#39;word&#39;
+	vect__max_features: 1000
+	vect__min_df: 6
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l2&#39;
+	vect__smooth_idf: True
+	vect__stop_words: None
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+              precision    recall  f1-score   support
+
+           0       0.98      0.94      0.96       163
+           1       0.94      0.98      0.96       167
+
+   micro avg       0.96      0.96      0.96       330
+   macro avg       0.96      0.96      0.96       330
+weighted avg       0.96      0.96      0.96       330
+
+[[153  10]
+ [  3 164]]
 </pre>
 </div>
 </div>
@@ -14313,6 +14331,264 @@ weighted avg       0.91      0.91      0.91        33
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[612]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="k">import</span> <span class="n">KMeans</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">calinski_harabaz_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">Normalizer</span>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="k">import</span> <span class="n">make_pipeline</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">Normalizer</span>
+
+<span class="n">vectorizador</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">max_df</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">max_features</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span>
+                               <span class="n">min_df</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stop_words</span><span class="o">=</span><span class="s1">&#39;english&#39;</span><span class="p">,</span>
+                               <span class="c1">#stop_words=stopwords,</span>
+                               <span class="c1">#token_pattern=r&#39;(?u)\b[A-Za-z]+\b&#39;,</span>
+                               <span class="c1">#token_pattern=r&#39;(?ui)\b\w*[a-z]+\w*\b&#39;,</span>
+                               <span class="n">use_idf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">vectorizador</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">n_componentes</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">svd_truncado</span> <span class="o">=</span> <span class="n">TruncatedSVD</span><span class="p">(</span><span class="n">n_componentes</span><span class="p">)</span>
+<span class="n">normalizador</span> <span class="o">=</span> <span class="n">Normalizer</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">lsa</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">svd_truncado</span><span class="p">,</span> <span class="n">normalizador</span><span class="p">)</span>
+<span class="c1">#lsa = svd_truncado</span>
+
+<span class="n">X_lsa</span> <span class="o">=</span> <span class="n">lsa</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="n">varianza_explicada</span> <span class="o">=</span> <span class="n">svd_truncado</span><span class="o">.</span><span class="n">explained_variance_ratio_</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">normalizer</span> <span class="o">=</span> <span class="n">Normalizer</span><span class="p">()</span>
+<span class="n">X_lsa_norm</span> <span class="o">=</span> <span class="n">normalizer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_lsa</span><span class="p">)</span>
+<span class="n">X_km</span> <span class="o">=</span> <span class="n">X_lsa_norm</span>
+
+<span class="n">qmetric</span> <span class="o">=</span> <span class="n">calinski_harabaz_score</span>
+
+<span class="n">Nclusters_max</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">Nrepetitions</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="n">qualities</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">inertias</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">models</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">kini</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">kfin</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">kini</span><span class="p">,</span><span class="n">kfin</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evaluando k=</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">km</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                <span class="n">init</span><span class="o">=</span><span class="s1">&#39;k-means++&#39;</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="n">Nrepetitions</span><span class="p">,</span>
+                <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>    
+    <span class="n">km</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_km</span><span class="p">)</span>
+    <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">km</span><span class="p">)</span>
+    <span class="n">inertias</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">km</span><span class="o">.</span><span class="n">inertia_</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">qualities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qmetric</span><span class="p">(</span><span class="n">X_km</span><span class="p">,</span> <span class="n">km</span><span class="o">.</span><span class="n">labels_</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">qualities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>(2692, 1000)
+Evaluando k=1
+Evaluando k=2
+Evaluando k=3
+Evaluando k=4
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[613]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">kini</span><span class="p">,</span><span class="n">kfin</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">inertias</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;number of clusters&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;clustering inertia&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">kini</span><span class="p">,</span><span class="n">kfin</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">qualities</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;number of clusters&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;clustering quality&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">best</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">qualities</span><span class="p">)</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()</span> <span class="c1"># get index for the best model</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best number of clusters&quot;</span><span class="p">,</span> <span class="n">best</span><span class="p">)</span>
+<span class="n">km</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">best</span><span class="p">]</span>
+<span class="n">n_clusters</span> <span class="o">=</span> <span class="n">km</span><span class="o">.</span><span class="n">get_params</span><span class="p">()[</span><span class="s1">&#39;n_clusters&#39;</span><span class="p">]</span>
+<span class="n">clusters</span> <span class="o">=</span> <span class="n">km</span><span class="o">.</span><span class="n">labels_</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Number of clusters of best quality&#39;</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="TextMining_Assignment_files/TextMining_Assignment_18_0.png"
+>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Best number of clusters 1
+Number of clusters of best quality 2
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[616]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># We choose the best option to evaluate the quality of prediction</span>
+
+<span class="c1"># First we try with labels as is </span>
+<span class="n">labels_predicted</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">km</span><span class="o">.</span><span class="n">labels_</span><span class="p">]</span>
+<span class="n">predicted</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">labels_predicted</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
+
+<span class="c1"># Alternatively we invert the label to match the real labels of each group</span>
+<span class="n">labels_predicted</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">((</span><span class="n">label</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="k">2</span>) for label in km.labels_]
+<span class="n">predicted</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">labels_predicted</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>              precision    recall  f1-score   support
+
+           0       0.99      0.87      0.93      1348
+           1       0.88      0.99      0.93      1344
+
+   micro avg       0.93      0.93      0.93      2692
+   macro avg       0.94      0.93      0.93      2692
+weighted avg       0.94      0.93      0.93      2692
+
+[[1169  179]
+ [   7 1337]]
+              precision    recall  f1-score   support
+
+           0       0.12      0.13      0.12      1348
+           1       0.01      0.01      0.01      1344
+
+   micro avg       0.07      0.07      0.07      2692
+   macro avg       0.06      0.07      0.07      2692
+weighted avg       0.06      0.07      0.07      2692
+
+[[ 179 1169]
+ [1337    7]]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Pipelining">Pipelining<a class="anchor-link" href="#Pipelining">&#182;</a></h2><p>Can I put all in the pipeline defined previously?</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># First set of parameters</span>
+<span class="n">param_set_1</span> <span class="o">=</span> <span class="p">{</span> 
+    <span class="s1">&#39;vect__norm&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="s1">&#39;vect__smooth_idf&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;vect__sublinear_tf&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;vect__max_features&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="s1">&#39;vect__min_df&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s1">&#39;vect__stop_words&#39;</span><span class="p">:</span> <span class="s1">&#39;english&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;vect__strip_accents&#39;</span> <span class="p">:</span> <span class="s1">&#39;unicode&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;vect__analyzer&#39;</span> <span class="p">:</span> <span class="s1">&#39;word&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;vect__token_pattern&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;\w{1,}&#39;</span><span class="p">,</span> 
+    <span class="s1">&#39;vect__ngram_range&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="s1">&#39;scaler__with_mean&#39;</span> <span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s1">&#39;vect__norm&#39;</span><span class="p">:</span> <span class="s1">&#39;l2&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;red_svd__n_components&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+    <span class="s1">&#39;clf_knn__n_neighbors&#39;</span> <span class="p">:</span> <span class="mi">2</span>
+<span class="p">}</span>
+
+<span class="c1"># More stop words</span>
+<span class="c1">#eng_and_custom_stopwords = improve_stop_words(X_train, 200)</span>
+<span class="c1">#param_set_1[&#39;vect__stop_words&#39;] = eng_and_custom_stopwords</span>
+
+<span class="n">process_classifications</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">param_set_1</span><span class="p">,</span> <span class="n">reducers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;svd&#39;</span><span class="p">],</span> <span class="n">classifiers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;kmeans&#39;</span><span class="p">])</span>
+
+<span class="c1">#process_classifications(X_train, y_train, X_test, y_test, param_set_1)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -14322,7 +14598,7 @@ weighted avg       0.91      0.91      0.91        33
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[451]:</div>
+<div class="prompt input_prompt">In&nbsp;[617]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span>%%bash
