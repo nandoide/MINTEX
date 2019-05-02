@@ -13144,7 +13144,7 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[609]:</div>
+<div class="prompt input_prompt">In&nbsp;[853]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">warnings</span>
@@ -13164,7 +13164,7 @@ $( document ).ready(function(){
 <span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="k">import</span> <span class="n">TfidfVectorizer</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">Normalizer</span><span class="p">,</span> <span class="n">MinMaxScaler</span><span class="p">,</span> <span class="n">MaxAbsScaler</span>
 <span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="k">import</span> <span class="n">LogisticRegression</span>
-<span class="kn">from</span> <span class="nn">sklearn.feature_selection</span> <span class="k">import</span> <span class="n">SelectKBest</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_selection</span> <span class="k">import</span> <span class="n">SelectKBest</span><span class="p">,</span> <span class="n">SelectPercentile</span><span class="p">,</span> <span class="n">f_classif</span>
 <span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="k">import</span> <span class="n">Pipeline</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">train_test_split</span>
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">metrics</span>
@@ -13175,8 +13175,9 @@ $( document ).ready(function(){
 <span class="kn">from</span> <span class="nn">sklearn.feature_extraction</span> <span class="k">import</span> <span class="n">stop_words</span>
 <span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="k">import</span> <span class="n">TransformerMixin</span>
 <span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="k">import</span> <span class="n">KMeans</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">calinski_harabaz_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">calinski_harabaz_score</span><span class="p">,</span> <span class="n">accuracy_score</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">Normalizer</span><span class="p">,</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">OneHotEncoder</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">make_scorer</span>
 
 <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span>
 </pre></div>
@@ -13188,11 +13189,12 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[610]:</div>
+<div class="prompt input_prompt">In&nbsp;[762]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Data loading</span>
-<span class="n">NROWS</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span>
+<span class="c1">#NROWS = sys.maxsize</span>
+<span class="n">NROWS</span> <span class="o">=</span> <span class="mi">50</span>
 <span class="c1">## Negative dataset</span>
 <span class="n">df_neg</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./practica_clase/PRECISION_MEDICINE/negative_training_abstracts.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> 
                      <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nrows</span> <span class="o">=</span> <span class="n">NROWS</span><span class="p">)</span>
@@ -13462,7 +13464,7 @@ $( document ).ready(function(){
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>8156 8156
+<pre>100 100
 </pre>
 </div>
 </div>
@@ -13480,12 +13482,12 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[611]:</div>
+<div class="prompt input_prompt">In&nbsp;[763]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">TEST_SIZE</span> <span class="o">=</span> <span class="mf">0.33</span>
 <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
-    <span class="n">corpus</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.33</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">)</span>
+    <span class="n">corpus</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">TEST_SIZE</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13563,7 +13565,7 @@ screen captures.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[470]:</div>
+<div class="prompt input_prompt">In&nbsp;[764]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_top_n_words</span><span class="p">(</span><span class="n">corpus</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -13601,55 +13603,43 @@ screen captures.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[527]:</div>
+<div class="prompt input_prompt">In&nbsp;[845]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">CLASSIFIERS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;knn&#39;</span><span class="p">,</span> <span class="s1">&#39;dtree&#39;</span><span class="p">,</span> <span class="s1">&#39;nb&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">,</span> <span class="s1">&#39;svc&#39;</span><span class="p">,</span> <span class="s1">&#39;lsvc&#39;</span><span class="p">]</span>
-<span class="n">CLASSIFIERS_FROM_CLUSTERS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;kmeans&#39;</span><span class="p">]</span>
-<span class="n">REDUCERS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;svd&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+<span class="n">CLASSIFIERS_UNSUPERVISED</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;kmeans&#39;</span><span class="p">]</span>
+<span class="n">REDUCERS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;svd&#39;</span><span class="p">,</span> <span class="s1">&#39;kbest&#39;</span><span class="p">,</span> <span class="s1">&#39;percentile&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
 <span class="n">CV</span> <span class="o">=</span> <span class="mi">4</span>
 
-<span class="k">class</span> <span class="nc">KMeans_foo</span><span class="p">(</span><span class="n">KMeans</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-
-<span class="k">class</span> <span class="nc">Transformer</span><span class="p">(</span><span class="n">TransformerMixin</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
-
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span>
-
-    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="o">**</span><span class="n">transform_params</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
-    
 <span class="k">def</span> <span class="nf">create_text_pipeline</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="s1">&#39;svd&#39;</span><span class="p">,</span> <span class="n">classifier</span><span class="o">=</span><span class="s2">&quot;nb&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Create text vectorization pipeline with optional dimensionality reduction&quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="n">reducer</span> <span class="ow">in</span> <span class="n">REDUCERS</span><span class="p">,</span> <span class="s2">&quot;ERROR: Reducer </span><span class="si">%s</span><span class="s2"> not supported, only </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">reducer</span><span class="p">,</span> <span class="n">REDUCERS</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">classifier</span> <span class="ow">in</span> <span class="n">CLASSIFIERS</span> <span class="o">+</span> <span class="n">CLASSIFIERS_FROM_CLUSTERS</span><span class="p">,</span>\
-        <span class="s2">&quot;ERROR: Classifier </span><span class="si">%s</span><span class="s2"> not supported, only </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">CLASSIFIERS</span> <span class="o">+</span> <span class="n">CLASSIFIERS_FROM_CLUSTERS</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">classifier</span> <span class="ow">in</span> <span class="n">CLASSIFIERS</span> <span class="o">+</span> <span class="n">CLASSIFIERS_UNSUPERVISED</span><span class="p">,</span>\
+        <span class="s2">&quot;ERROR: Classifier </span><span class="si">%s</span><span class="s2"> not supported, only </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">CLASSIFIERS</span> <span class="o">+</span> <span class="n">CLASSIFIERS_UNSUPERVISED</span><span class="p">)</span>
     <span class="n">pipeline</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s1">&#39;vect&#39;</span><span class="p">,</span> <span class="n">TfidfVectorizer</span><span class="p">()),</span>
         <span class="p">(</span><span class="s1">&#39;scaler&#39;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">())</span>
     <span class="p">]</span>
-    <span class="n">num_comp</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="c1"># Reduce dimensions</span>
     <span class="k">if</span> <span class="n">reducer</span> <span class="o">==</span> <span class="s1">&#39;svd&#39;</span><span class="p">:</span>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;red_svd&#39;</span><span class="p">,</span> <span class="n">TruncatedSVD</span><span class="p">()))</span>
-        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;norm&#39;</span><span class="p">,</span> <span class="n">MinMaxScaler</span><span class="p">()))</span>
     <span class="k">elif</span> <span class="n">reducer</span> <span class="o">==</span> <span class="s1">&#39;kbest&#39;</span><span class="p">:</span>
-        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;red_kbest&#39;</span><span class="p">,</span> <span class="n">SelectKBest</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">num_comp</span><span class="p">)))</span>
-        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;norm&#39;</span><span class="p">,</span> <span class="n">MinMaxScaler</span><span class="p">()))</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;red_kbest&#39;</span><span class="p">,</span> <span class="n">SelectKBest</span><span class="p">()))</span>
     <span class="k">elif</span> <span class="n">reducer</span> <span class="o">==</span> <span class="s1">&#39;percentile&#39;</span><span class="p">:</span>
-        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;red_percentile&#39;</span><span class="p">,</span> <span class="n">SelectPercentile</span><span class="p">(</span><span class="n">f_classif</span><span class="p">,</span> <span class="n">percentile</span><span class="o">=</span><span class="n">num_comp</span><span class="p">)))</span>
-        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;norm&#39;</span><span class="p">,</span> <span class="n">MinMaxScaler</span><span class="p">()))</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;red_percentile&#39;</span><span class="p">,</span> <span class="n">SelectPercentile</span><span class="p">()))</span>
     <span class="k">elif</span> <span class="n">reducer</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1">#pipeline.append((&#39;normalizer&#39;, MaxAbsScaler()))</span>
         <span class="k">pass</span>
     
     <span class="c1"># Classify</span>
     <span class="k">if</span> <span class="n">classifier</span> <span class="o">==</span> <span class="s2">&quot;nb&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">reducer</span> <span class="o">==</span> <span class="s1">&#39;svd&#39;</span><span class="p">:</span>
+            <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;mm_scaler&#39;</span><span class="p">,</span> <span class="n">MinMaxScaler</span><span class="p">()))</span>
+        <span class="k">elif</span> <span class="n">reducer</span> <span class="o">==</span> <span class="s1">&#39;kbest&#39;</span><span class="p">:</span>
+            <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;mm_scaler&#39;</span><span class="p">,</span> <span class="n">MaxAbsScaler</span><span class="p">()))</span>
+        <span class="k">elif</span> <span class="n">reducer</span> <span class="o">==</span> <span class="s1">&#39;percentile&#39;</span><span class="p">:</span>
+            <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;mm_scaler&#39;</span><span class="p">,</span> <span class="n">MaxAbsScaler</span><span class="p">()))</span>
+        <span class="k">elif</span> <span class="n">reducer</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;clf_&#39;</span> <span class="o">+</span> <span class="n">classifier</span><span class="p">,</span> <span class="n">MultinomialNB</span><span class="p">()))</span>
     <span class="k">elif</span> <span class="n">classifier</span> <span class="o">==</span> <span class="s2">&quot;lr&quot;</span><span class="p">:</span>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;clf_&#39;</span> <span class="o">+</span> <span class="n">classifier</span><span class="p">,</span> <span class="n">LogisticRegression</span><span class="p">()))</span>
@@ -13662,35 +13652,64 @@ screen captures.</p>
     <span class="k">elif</span> <span class="n">classifier</span> <span class="o">==</span> <span class="s2">&quot;knn&quot;</span><span class="p">:</span>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;clf_&#39;</span> <span class="o">+</span> <span class="n">classifier</span><span class="p">,</span> <span class="n">KNeighborsClassifier</span><span class="p">()))</span>    
     <span class="k">elif</span> <span class="n">classifier</span> <span class="o">==</span> <span class="s2">&quot;kmeans&quot;</span><span class="p">:</span>
-        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;normalizer&#39;</span><span class="p">,</span> <span class="n">Normalizer</span><span class="p">()))</span>
-        <span class="c1">#pipeline.append((&#39;cluster_kmeans&#39; + classifier, Transformer(KMeans_foo(2))))</span>
-        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;cluster_kmeans&#39;</span><span class="p">,</span> <span class="n">KMeans</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span>
-        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;one_hot_encoder&#39;</span><span class="p">,</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span>
-        <span class="c1">#pipeline.append((&#39;binarize&#39;, LabelBinarizer()))</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;norm&#39;</span><span class="p">,</span> <span class="n">Normalizer</span><span class="p">()))</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;cluster_kmeans&#39;</span><span class="p">,</span> <span class="n">KMeans</span><span class="p">()))</span>
     <span class="k">elif</span> <span class="n">classifier</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
     
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pipeline&quot;</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Pipeline</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
 
+<span class="k">def</span> <span class="nf">get_prediction_from_cluster</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Transform cluster assignment in y_pred object&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">swap_label</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;0&#39;</span>
+        <span class="k">elif</span> <span class="n">label</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;1&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+    <span class="n">labels_predicted</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+    <span class="n">predicted</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">labels_predicted</span><span class="p">)</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">)</span>
+    <span class="n">labels_predicted_reverse</span> <span class="o">=</span> <span class="p">[</span><span class="n">swap_label</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+    <span class="n">predicted_reverse</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">labels_predicted_reverse</span><span class="p">)</span>
+    <span class="n">accuracy_reverse</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted_reverse</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">accuracy_reverse</span> <span class="o">&gt;</span> <span class="n">accuracy</span><span class="p">:</span> <span class="n">predicted</span> <span class="o">=</span> <span class="n">predicted_reverse</span>
+    <span class="k">return</span> <span class="n">predicted</span>
+
+<span class="k">def</span> <span class="nf">get_filtered_params</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Filter the params that aren&#39;t related to steps in the pipeline &quot;&quot;&quot;</span>
+    <span class="n">filtered_params</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">param_key</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">param_key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">named_steps</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">filtered_params</span><span class="p">[</span><span class="n">param_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="n">param_key</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">filtered_params</span>
+
+<span class="k">def</span> <span class="nf">get_filtered_set</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Filter the params that aren&#39;t related to steps in the pipeline &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_filtered_params</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">filtered_set</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">param_set</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
+            <span class="n">filtered_set</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_filtered_params</span><span class="p">(</span><span class="n">param_set</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">filtered_set</span>
+    
 <span class="k">def</span> <span class="nf">prediction_metrics</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="s2">&quot;svd&quot;</span><span class="p">,</span> <span class="n">classifier</span><span class="o">=</span><span class="s2">&quot;nb&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;### Reducer: </span><span class="si">%s</span><span class="s2">   Classifier: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">reducer</span><span class="p">,</span> <span class="n">classifier</span><span class="p">))</span>
     <span class="n">pipeline</span> <span class="o">=</span> <span class="n">create_text_pipeline</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer</span><span class="p">,</span> <span class="n">classifier</span><span class="o">=</span><span class="n">classifier</span><span class="p">)</span>
-    <span class="c1"># Filter params to only the params related with the pipeline steps</span>
-    <span class="n">filtered_params</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">param_key</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">param_key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">named_steps</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">filtered_params</span><span class="p">[</span><span class="n">param_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="n">param_key</span><span class="p">]</span>
-    <span class="n">pipeline</span><span class="o">.</span><span class="n">set_params</span><span class="p">(</span><span class="o">**</span><span class="n">filtered_params</span><span class="p">)</span>
+    <span class="n">pipeline</span><span class="o">.</span><span class="n">set_params</span><span class="p">(</span><span class="o">**</span><span class="n">get_filtered_params</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pipeline&quot;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">named_steps</span><span class="p">)</span>
     <span class="n">pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">classifier</span> <span class="o">==</span> <span class="s2">&quot;kmeans&quot;</span><span class="p">:</span>
-        <span class="n">predicted</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">predicted</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">y_test</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">classifier</span> <span class="ow">in</span> <span class="n">CLASSIFIERS_UNSUPERVISED</span><span class="p">:</span>
+        <span class="n">predicted</span> <span class="o">=</span> <span class="n">get_prediction_from_cluster</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">predicted</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
     
@@ -13701,24 +13720,31 @@ screen captures.</p>
     <span class="k">for</span> <span class="n">classifier</span> <span class="ow">in</span> <span class="n">classifiers</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">reducer</span> <span class="ow">in</span> <span class="n">reducers</span><span class="p">:</span>
                 <span class="n">prediction_metrics</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">classifier</span><span class="p">)</span>
-                
+
+
 <span class="k">def</span> <span class="nf">prediction_metrics_grid</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">parameters_grid</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="s2">&quot;svd&quot;</span><span class="p">,</span> <span class="n">classifier</span><span class="o">=</span><span class="s2">&quot;nb&quot;</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">CV</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;### Reducer: </span><span class="si">%s</span><span class="s2">   Classifier: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">reducer</span><span class="p">,</span> <span class="n">classifier</span><span class="p">))</span>
     <span class="n">pipeline</span> <span class="o">=</span> <span class="n">create_text_pipeline</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer</span><span class="p">,</span> <span class="n">classifier</span><span class="o">=</span><span class="n">classifier</span><span class="p">)</span>
-    <span class="c1"># Filter params to only the params related with the pipeline steps</span>
-    <span class="n">filtered_params</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">param_key</span> <span class="ow">in</span> <span class="n">parameters_grid</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">param_key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">named_steps</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">filtered_params</span><span class="p">[</span><span class="n">param_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters_grid</span><span class="p">[</span><span class="n">param_key</span><span class="p">]</span>     
-    <span class="n">grid_model</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">filtered_params</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">iid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">filtered_params</span> <span class="o">=</span> <span class="n">get_filtered_set</span><span class="p">(</span><span class="n">parameters_grid</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">)</span>
+    <span class="c1">#scoring = {&#39;accuracy&#39;: make_scorer(accuracy_score), &#39;calinski&#39;: make_scorer(calinski_harabaz_score)}</span>
+    <span class="n">scoring</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">)}</span>
+    <span class="n">grid_model</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">filtered_params</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">iid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">error_score</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                              <span class="n">scoring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">grid_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">filtered_params</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+    <span class="nb">print</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best parameters&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">grid_model</span><span class="o">.</span><span class="n">best_params_</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s2">: </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param_name</span><span class="p">,</span> <span class="n">grid_model</span><span class="o">.</span><span class="n">best_params_</span><span class="p">[</span><span class="n">param_name</span><span class="p">]))</span>  
     <span class="n">pipeline</span><span class="o">.</span><span class="n">set_params</span><span class="p">(</span><span class="o">**</span><span class="n">grid_model</span><span class="o">.</span><span class="n">best_params_</span><span class="p">)</span>
     <span class="n">pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-    <span class="n">predicted</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">classifier</span> <span class="ow">in</span> <span class="n">CLASSIFIERS_UNSUPERVISED</span><span class="p">:</span>
+        <span class="n">predicted</span> <span class="o">=</span> <span class="n">get_prediction_from_cluster</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">predicted</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
     
@@ -13745,7 +13771,7 @@ screen captures.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[498]:</div>
+<div class="prompt input_prompt">In&nbsp;[884]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># First set of parameters</span>
@@ -13760,19 +13786,23 @@ screen captures.</p>
     <span class="s1">&#39;vect__analyzer&#39;</span> <span class="p">:</span> <span class="s1">&#39;word&#39;</span><span class="p">,</span>
     <span class="s1">&#39;vect__token_pattern&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;\w{1,}&#39;</span><span class="p">,</span> 
     <span class="s1">&#39;vect__ngram_range&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-    <span class="s1">&#39;scaler__with_mean&#39;</span> <span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s1">&#39;scaler&#39;</span> <span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="s1">&#39;red_kbest__k&#39;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s1">&#39;red_percentile__score_func&#39;</span> <span class="p">:</span> <span class="n">f_classif</span><span class="p">,</span>
+    <span class="s1">&#39;red_percentile__percentile&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="c1">#&#39;scaler__with_mean&#39; : False,</span>
     <span class="s1">&#39;vect__norm&#39;</span><span class="p">:</span> <span class="s1">&#39;l2&#39;</span><span class="p">,</span>
     <span class="s1">&#39;red_svd__n_components&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
-    <span class="s1">&#39;clf_knn__n_neighbors&#39;</span> <span class="p">:</span> <span class="mi">2</span>
+    <span class="s1">&#39;clf_knn__n_neighbors&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="c1"># More stop words</span>
 <span class="c1">#eng_and_custom_stopwords = improve_stop_words(X_train, 200)</span>
 <span class="c1">#param_set_1[&#39;vect__stop_words&#39;] = eng_and_custom_stopwords</span>
 
-<span class="c1">#process_classifications(X_train, y_train, X_test, y_test, param_set_1, reducers=[&#39;svd&#39;], classifiers=[&#39;nb&#39;])</span>
+<span class="n">process_classifications</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">param_set_1</span><span class="p">,</span> <span class="n">reducers</span><span class="o">=</span><span class="n">REDUCERS</span><span class="p">,</span> <span class="n">classifiers</span><span class="o">=</span><span class="n">CLASSIFIERS</span><span class="p">)</span>
 
-<span class="n">process_classifications</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">param_set_1</span><span class="p">)</span>
+<span class="c1">#process_classifications(X_train, y_train, X_test, y_test, param_set_1)</span>
 </pre></div>
 
     </div>
@@ -13790,42 +13820,194 @@ screen captures.</p>
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>### Reducer: svd   Classifier: knn
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_svd&#39;: TruncatedSVD(algorithm=&#39;randomized&#39;, n_components=40, n_iter=5,
+       random_state=None, tol=0.0), &#39;clf_knn&#39;: KNeighborsClassifier(algorithm=&#39;auto&#39;, leaf_size=30, metric=&#39;minkowski&#39;,
+           metric_params=None, n_jobs=None, n_neighbors=2, p=2,
+           weights=&#39;uniform&#39;)}
+
+Accuracy 0.9393939393939394
               precision    recall  f1-score   support
 
-           0       0.68      1.00      0.81        15
-           1       1.00      0.61      0.76        18
+           0       0.88      1.00      0.94        15
+           1       1.00      0.89      0.94        18
 
-   micro avg       0.79      0.79      0.79        33
-   macro avg       0.84      0.81      0.78        33
-weighted avg       0.86      0.79      0.78        33
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.94      0.94      0.94        33
+weighted avg       0.95      0.94      0.94        33
 
 [[15  0]
- [ 7 11]]
-### Reducer: None   Classifier: knn
+ [ 2 16]]
+### Reducer: kbest   Classifier: knn
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_kbest&#39;: SelectKBest(k=3, score_func=&lt;function f_classif at 0x1a1b98f1e0&gt;), &#39;clf_knn&#39;: KNeighborsClassifier(algorithm=&#39;auto&#39;, leaf_size=30, metric=&#39;minkowski&#39;,
+           metric_params=None, n_jobs=None, n_neighbors=2, p=2,
+           weights=&#39;uniform&#39;)}
+
+Accuracy 0.9090909090909091
               precision    recall  f1-score   support
 
-           0       0.60      1.00      0.75        15
-           1       1.00      0.44      0.62        18
-
-   micro avg       0.70      0.70      0.70        33
-   macro avg       0.80      0.72      0.68        33
-weighted avg       0.82      0.70      0.68        33
-
-[[15  0]
- [10  8]]
-### Reducer: svd   Classifier: dtree
-              precision    recall  f1-score   support
-
-           0       0.83      1.00      0.91        15
-           1       1.00      0.83      0.91        18
+           0       0.88      0.93      0.90        15
+           1       0.94      0.89      0.91        18
 
    micro avg       0.91      0.91      0.91        33
-   macro avg       0.92      0.92      0.91        33
-weighted avg       0.92      0.91      0.91        33
+   macro avg       0.91      0.91      0.91        33
+weighted avg       0.91      0.91      0.91        33
+
+[[14  1]
+ [ 2 16]]
+### Reducer: percentile   Classifier: knn
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_percentile&#39;: SelectPercentile(percentile=10,
+         score_func=&lt;function f_classif at 0x1a1b98f1e0&gt;), &#39;clf_knn&#39;: KNeighborsClassifier(algorithm=&#39;auto&#39;, leaf_size=30, metric=&#39;minkowski&#39;,
+           metric_params=None, n_jobs=None, n_neighbors=2, p=2,
+           weights=&#39;uniform&#39;)}
+
+Accuracy 0.696969696969697
+              precision    recall  f1-score   support
+
+           0       0.61      0.93      0.74        15
+           1       0.90      0.50      0.64        18
+
+   micro avg       0.70      0.70      0.70        33
+   macro avg       0.75      0.72      0.69        33
+weighted avg       0.77      0.70      0.69        33
+
+[[14  1]
+ [ 9  9]]
+### Reducer: None   Classifier: knn
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;clf_knn&#39;: KNeighborsClassifier(algorithm=&#39;auto&#39;, leaf_size=30, metric=&#39;minkowski&#39;,
+           metric_params=None, n_jobs=None, n_neighbors=2, p=2,
+           weights=&#39;uniform&#39;)}
+
+Accuracy 0.9393939393939394
+              precision    recall  f1-score   support
+
+           0       0.88      1.00      0.94        15
+           1       1.00      0.89      0.94        18
+
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.94      0.94      0.94        33
+weighted avg       0.95      0.94      0.94        33
 
 [[15  0]
- [ 3 15]]
+ [ 2 16]]
+### Reducer: svd   Classifier: dtree
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_svd&#39;: TruncatedSVD(algorithm=&#39;randomized&#39;, n_components=40, n_iter=5,
+       random_state=None, tol=0.0), &#39;clf_dtree&#39;: DecisionTreeClassifier(class_weight=None, criterion=&#39;gini&#39;, max_depth=None,
+            max_features=None, max_leaf_nodes=None,
+            min_impurity_decrease=0.0, min_impurity_split=None,
+            min_samples_leaf=1, min_samples_split=2,
+            min_weight_fraction_leaf=0.0, presort=False, random_state=None,
+            splitter=&#39;best&#39;)}
+
+Accuracy 0.8787878787878788
+              precision    recall  f1-score   support
+
+           0       0.79      1.00      0.88        15
+           1       1.00      0.78      0.88        18
+
+   micro avg       0.88      0.88      0.88        33
+   macro avg       0.89      0.89      0.88        33
+weighted avg       0.90      0.88      0.88        33
+
+[[15  0]
+ [ 4 14]]
+### Reducer: kbest   Classifier: dtree
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_kbest&#39;: SelectKBest(k=3, score_func=&lt;function f_classif at 0x1a1b98f1e0&gt;), &#39;clf_dtree&#39;: DecisionTreeClassifier(class_weight=None, criterion=&#39;gini&#39;, max_depth=None,
+            max_features=None, max_leaf_nodes=None,
+            min_impurity_decrease=0.0, min_impurity_split=None,
+            min_samples_leaf=1, min_samples_split=2,
+            min_weight_fraction_leaf=0.0, presort=False, random_state=None,
+            splitter=&#39;best&#39;)}
+
+Accuracy 0.9696969696969697
+              precision    recall  f1-score   support
+
+           0       1.00      0.93      0.97        15
+           1       0.95      1.00      0.97        18
+
+   micro avg       0.97      0.97      0.97        33
+   macro avg       0.97      0.97      0.97        33
+weighted avg       0.97      0.97      0.97        33
+
+[[14  1]
+ [ 0 18]]
+### Reducer: percentile   Classifier: dtree
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_percentile&#39;: SelectPercentile(percentile=10,
+         score_func=&lt;function f_classif at 0x1a1b98f1e0&gt;), &#39;clf_dtree&#39;: DecisionTreeClassifier(class_weight=None, criterion=&#39;gini&#39;, max_depth=None,
+            max_features=None, max_leaf_nodes=None,
+            min_impurity_decrease=0.0, min_impurity_split=None,
+            min_samples_leaf=1, min_samples_split=2,
+            min_weight_fraction_leaf=0.0, presort=False, random_state=None,
+            splitter=&#39;best&#39;)}
+
+Accuracy 0.9393939393939394
+              precision    recall  f1-score   support
+
+           0       1.00      0.87      0.93        15
+           1       0.90      1.00      0.95        18
+
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.95      0.93      0.94        33
+weighted avg       0.95      0.94      0.94        33
+
+[[13  2]
+ [ 0 18]]
 ### Reducer: None   Classifier: dtree
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;clf_dtree&#39;: DecisionTreeClassifier(class_weight=None, criterion=&#39;gini&#39;, max_depth=None,
+            max_features=None, max_leaf_nodes=None,
+            min_impurity_decrease=0.0, min_impurity_split=None,
+            min_samples_leaf=1, min_samples_split=2,
+            min_weight_fraction_leaf=0.0, presort=False, random_state=None,
+            splitter=&#39;best&#39;)}
+
+Accuracy 0.9393939393939394
               precision    recall  f1-score   support
 
            0       1.00      0.87      0.93        15
@@ -13838,6 +14020,16 @@ weighted avg       0.95      0.94      0.94        33
 [[13  2]
  [ 0 18]]
 ### Reducer: svd   Classifier: nb
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_svd&#39;: TruncatedSVD(algorithm=&#39;randomized&#39;, n_components=40, n_iter=5,
+       random_state=None, tol=0.0), &#39;mm_scaler&#39;: MinMaxScaler(copy=True, feature_range=(0, 1)), &#39;clf_nb&#39;: MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True)}
+
+Accuracy 0.9090909090909091
               precision    recall  f1-score   support
 
            0       0.83      1.00      0.91        15
@@ -13849,7 +14041,59 @@ weighted avg       0.92      0.91      0.91        33
 
 [[15  0]
  [ 3 15]]
+### Reducer: kbest   Classifier: nb
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_kbest&#39;: SelectKBest(k=3, score_func=&lt;function f_classif at 0x1a1b98f1e0&gt;), &#39;mm_scaler&#39;: MaxAbsScaler(copy=True), &#39;clf_nb&#39;: MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True)}
+
+Accuracy 0.5454545454545454
+              precision    recall  f1-score   support
+
+           0       0.50      1.00      0.67        15
+           1       1.00      0.17      0.29        18
+
+   micro avg       0.55      0.55      0.55        33
+   macro avg       0.75      0.58      0.48        33
+weighted avg       0.77      0.55      0.46        33
+
+[[15  0]
+ [15  3]]
+### Reducer: percentile   Classifier: nb
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_percentile&#39;: SelectPercentile(percentile=10,
+         score_func=&lt;function f_classif at 0x1a1b98f1e0&gt;), &#39;mm_scaler&#39;: MaxAbsScaler(copy=True), &#39;clf_nb&#39;: MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True)}
+
+Accuracy 0.9090909090909091
+              precision    recall  f1-score   support
+
+           0       0.93      0.87      0.90        15
+           1       0.89      0.94      0.92        18
+
+   micro avg       0.91      0.91      0.91        33
+   macro avg       0.91      0.91      0.91        33
+weighted avg       0.91      0.91      0.91        33
+
+[[13  2]
+ [ 1 17]]
 ### Reducer: None   Classifier: nb
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;clf_nb&#39;: MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True)}
+
+Accuracy 0.9090909090909091
               precision    recall  f1-score   support
 
            0       0.93      0.87      0.90        15
@@ -13862,30 +14106,166 @@ weighted avg       0.91      0.91      0.91        33
 [[13  2]
  [ 1 17]]
 ### Reducer: svd   Classifier: lr
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_svd&#39;: TruncatedSVD(algorithm=&#39;randomized&#39;, n_components=40, n_iter=5,
+       random_state=None, tol=0.0), &#39;clf_lr&#39;: LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
+          intercept_scaling=1, max_iter=100, multi_class=&#39;warn&#39;,
+          n_jobs=None, penalty=&#39;l2&#39;, random_state=None, solver=&#39;warn&#39;,
+          tol=0.0001, verbose=0, warm_start=False)}
+
+Accuracy 0.9393939393939394
               precision    recall  f1-score   support
 
-           0       0.94      1.00      0.97        15
-           1       1.00      0.94      0.97        18
+           0       0.93      0.93      0.93        15
+           1       0.94      0.94      0.94        18
 
-   micro avg       0.97      0.97      0.97        33
-   macro avg       0.97      0.97      0.97        33
-weighted avg       0.97      0.97      0.97        33
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.94      0.94      0.94        33
+weighted avg       0.94      0.94      0.94        33
 
-[[15  0]
+[[14  1]
  [ 1 17]]
-### Reducer: None   Classifier: lr
+### Reducer: kbest   Classifier: lr
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_kbest&#39;: SelectKBest(k=3, score_func=&lt;function f_classif at 0x1a1b98f1e0&gt;), &#39;clf_lr&#39;: LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
+          intercept_scaling=1, max_iter=100, multi_class=&#39;warn&#39;,
+          n_jobs=None, penalty=&#39;l2&#39;, random_state=None, solver=&#39;warn&#39;,
+          tol=0.0001, verbose=0, warm_start=False)}
+
+Accuracy 0.7575757575757576
               precision    recall  f1-score   support
 
-           0       0.93      0.87      0.90        15
-           1       0.89      0.94      0.92        18
+           0       0.67      0.93      0.78        15
+           1       0.92      0.61      0.73        18
 
-   micro avg       0.91      0.91      0.91        33
-   macro avg       0.91      0.91      0.91        33
-weighted avg       0.91      0.91      0.91        33
+   micro avg       0.76      0.76      0.76        33
+   macro avg       0.79      0.77      0.76        33
+weighted avg       0.80      0.76      0.75        33
 
-[[13  2]
+[[14  1]
+ [ 7 11]]
+### Reducer: percentile   Classifier: lr
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_percentile&#39;: SelectPercentile(percentile=10,
+         score_func=&lt;function f_classif at 0x1a1b98f1e0&gt;), &#39;clf_lr&#39;: LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
+          intercept_scaling=1, max_iter=100, multi_class=&#39;warn&#39;,
+          n_jobs=None, penalty=&#39;l2&#39;, random_state=None, solver=&#39;warn&#39;,
+          tol=0.0001, verbose=0, warm_start=False)}
+
+Accuracy 0.8484848484848485
+              precision    recall  f1-score   support
+
+           0       0.78      0.93      0.85        15
+           1       0.93      0.78      0.85        18
+
+   micro avg       0.85      0.85      0.85        33
+   macro avg       0.86      0.86      0.85        33
+weighted avg       0.86      0.85      0.85        33
+
+[[14  1]
+ [ 4 14]]
+### Reducer: None   Classifier: lr
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;clf_lr&#39;: LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
+          intercept_scaling=1, max_iter=100, multi_class=&#39;warn&#39;,
+          n_jobs=None, penalty=&#39;l2&#39;, random_state=None, solver=&#39;warn&#39;,
+          tol=0.0001, verbose=0, warm_start=False)}
+
+Accuracy 0.9393939393939394
+              precision    recall  f1-score   support
+
+           0       0.93      0.93      0.93        15
+           1       0.94      0.94      0.94        18
+
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.94      0.94      0.94        33
+weighted avg       0.94      0.94      0.94        33
+
+[[14  1]
  [ 1 17]]
 ### Reducer: svd   Classifier: svc
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_svd&#39;: TruncatedSVD(algorithm=&#39;randomized&#39;, n_components=40, n_iter=5,
+       random_state=None, tol=0.0), &#39;clf_svc&#39;: SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
+  decision_function_shape=&#39;ovr&#39;, degree=3, gamma=&#39;auto_deprecated&#39;,
+  kernel=&#39;rbf&#39;, max_iter=-1, probability=False, random_state=None,
+  shrinking=True, tol=0.001, verbose=False)}
+
+Accuracy 0.45454545454545453
+              precision    recall  f1-score   support
+
+           0       0.45      1.00      0.62        15
+           1       0.00      0.00      0.00        18
+
+   micro avg       0.45      0.45      0.45        33
+   macro avg       0.23      0.50      0.31        33
+weighted avg       0.21      0.45      0.28        33
+
+[[15  0]
+ [18  0]]
+### Reducer: kbest   Classifier: svc
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_kbest&#39;: SelectKBest(k=3, score_func=&lt;function f_classif at 0x1a1b98f1e0&gt;), &#39;clf_svc&#39;: SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
+  decision_function_shape=&#39;ovr&#39;, degree=3, gamma=&#39;auto_deprecated&#39;,
+  kernel=&#39;rbf&#39;, max_iter=-1, probability=False, random_state=None,
+  shrinking=True, tol=0.001, verbose=False)}
+
+Accuracy 0.45454545454545453
+              precision    recall  f1-score   support
+
+           0       0.45      1.00      0.62        15
+           1       0.00      0.00      0.00        18
+
+   micro avg       0.45      0.45      0.45        33
+   macro avg       0.23      0.50      0.31        33
+weighted avg       0.21      0.45      0.28        33
+
+[[15  0]
+ [18  0]]
+### Reducer: percentile   Classifier: svc
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_percentile&#39;: SelectPercentile(percentile=10,
+         score_func=&lt;function f_classif at 0x1a1b98f1e0&gt;), &#39;clf_svc&#39;: SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
+  decision_function_shape=&#39;ovr&#39;, degree=3, gamma=&#39;auto_deprecated&#39;,
+  kernel=&#39;rbf&#39;, max_iter=-1, probability=False, random_state=None,
+  shrinking=True, tol=0.001, verbose=False)}
+
+Accuracy 0.45454545454545453
               precision    recall  f1-score   support
 
            0       0.45      1.00      0.62        15
@@ -13898,18 +14278,43 @@ weighted avg       0.21      0.45      0.28        33
 [[15  0]
  [18  0]]
 ### Reducer: None   Classifier: svc
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;clf_svc&#39;: SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
+  decision_function_shape=&#39;ovr&#39;, degree=3, gamma=&#39;auto_deprecated&#39;,
+  kernel=&#39;rbf&#39;, max_iter=-1, probability=False, random_state=None,
+  shrinking=True, tol=0.001, verbose=False)}
+
+Accuracy 0.45454545454545453
               precision    recall  f1-score   support
 
-           0       0.93      0.87      0.90        15
-           1       0.89      0.94      0.92        18
+           0       0.45      1.00      0.62        15
+           1       0.00      0.00      0.00        18
 
-   micro avg       0.91      0.91      0.91        33
-   macro avg       0.91      0.91      0.91        33
-weighted avg       0.91      0.91      0.91        33
+   micro avg       0.45      0.45      0.45        33
+   macro avg       0.23      0.50      0.31        33
+weighted avg       0.21      0.45      0.28        33
 
-[[13  2]
- [ 1 17]]
+[[15  0]
+ [18  0]]
 ### Reducer: svd   Classifier: lsvc
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_svd&#39;: TruncatedSVD(algorithm=&#39;randomized&#39;, n_components=40, n_iter=5,
+       random_state=None, tol=0.0), &#39;clf_lsvc&#39;: LinearSVC(C=1.0, class_weight=None, dual=True, fit_intercept=True,
+     intercept_scaling=1, loss=&#39;squared_hinge&#39;, max_iter=1000,
+     multi_class=&#39;ovr&#39;, penalty=&#39;l2&#39;, random_state=None, tol=0.0001,
+     verbose=0)}
+
+Accuracy 0.9393939393939394
               precision    recall  f1-score   support
 
            0       0.93      0.93      0.93        15
@@ -13921,7 +14326,68 @@ weighted avg       0.94      0.94      0.94        33
 
 [[14  1]
  [ 1 17]]
+### Reducer: kbest   Classifier: lsvc
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_kbest&#39;: SelectKBest(k=3, score_func=&lt;function f_classif at 0x1a1b98f1e0&gt;), &#39;clf_lsvc&#39;: LinearSVC(C=1.0, class_weight=None, dual=True, fit_intercept=True,
+     intercept_scaling=1, loss=&#39;squared_hinge&#39;, max_iter=1000,
+     multi_class=&#39;ovr&#39;, penalty=&#39;l2&#39;, random_state=None, tol=0.0001,
+     verbose=0)}
+
+Accuracy 0.8181818181818182
+              precision    recall  f1-score   support
+
+           0       0.74      0.93      0.82        15
+           1       0.93      0.72      0.81        18
+
+   micro avg       0.82      0.82      0.82        33
+   macro avg       0.83      0.83      0.82        33
+weighted avg       0.84      0.82      0.82        33
+
+[[14  1]
+ [ 5 13]]
+### Reducer: percentile   Classifier: lsvc
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_percentile&#39;: SelectPercentile(percentile=10,
+         score_func=&lt;function f_classif at 0x1a1b98f1e0&gt;), &#39;clf_lsvc&#39;: LinearSVC(C=1.0, class_weight=None, dual=True, fit_intercept=True,
+     intercept_scaling=1, loss=&#39;squared_hinge&#39;, max_iter=1000,
+     multi_class=&#39;ovr&#39;, penalty=&#39;l2&#39;, random_state=None, tol=0.0001,
+     verbose=0)}
+
+Accuracy 0.8181818181818182
+              precision    recall  f1-score   support
+
+           0       0.76      0.87      0.81        15
+           1       0.88      0.78      0.82        18
+
+   micro avg       0.82      0.82      0.82        33
+   macro avg       0.82      0.82      0.82        33
+weighted avg       0.82      0.82      0.82        33
+
+[[13  2]
+ [ 4 14]]
 ### Reducer: None   Classifier: lsvc
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=6,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;clf_lsvc&#39;: LinearSVC(C=1.0, class_weight=None, dual=True, fit_intercept=True,
+     intercept_scaling=1, loss=&#39;squared_hinge&#39;, max_iter=1000,
+     multi_class=&#39;ovr&#39;, penalty=&#39;l2&#39;, random_state=None, tol=0.0001,
+     verbose=0)}
+
+Accuracy 0.9090909090909091
               precision    recall  f1-score   support
 
            0       0.93      0.87      0.90        15
@@ -13950,36 +14416,27 @@ weighted avg       0.91      0.91      0.91        33
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[462]:</div>
+<div class="prompt input_prompt">In&nbsp;[885]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">parameters_grid</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;vect__min_df&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
-    <span class="c1">#&#39;vect__max_df&#39;: [10, 11],</span>
-    <span class="s1">&#39;vect__stop_words&#39;</span><span class="p">:</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;english&#39;</span><span class="p">,</span> <span class="n">eng_and_custom_stopwords</span><span class="p">),</span>
-    <span class="s1">&#39;vect__max_features&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">50</span><span class="p">],</span>
-    <span class="c1">#&#39;vect__smooth_idf&#39;: [True, False],</span>
-    <span class="s1">&#39;vect__norm&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;l1&#39;</span><span class="p">,</span> <span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
-    <span class="c1">#&#39;red_svd__n_components&#39;: (50, 100, 200, None),</span>
-    <span class="c1">#&#39;red_svd__n_components&#39;: (10, 20, 30, None),</span>
-    <span class="c1">#&#39;clf_nb__alpha&#39;: (1e-1, 1e-2, 1e-3)</span>
-<span class="p">}</span>
-
-<span class="n">parameters_grid</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;vect__norm&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;l1&#39;</span><span class="p">,</span> <span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
     <span class="s1">&#39;vect__smooth_idf&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">],</span>
     <span class="s1">&#39;vect__sublinear_tf&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">],</span>
     <span class="s1">&#39;vect__max_features&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">900</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
-    <span class="s1">&#39;vect__min_df&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
-    <span class="c1">#&#39;vect__max_df&#39;: [7,8],</span>
+    <span class="s1">&#39;vect__min_df&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+    <span class="s1">&#39;vect__max_df&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
     <span class="s1">&#39;vect__stop_words&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;english&#39;</span><span class="p">,</span> <span class="n">eng_and_custom_stopwords</span><span class="p">],</span>
     <span class="s1">&#39;vect__strip_accents&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;unicode&#39;</span><span class="p">],</span>
     <span class="s1">&#39;vect__analyzer&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;word&#39;</span><span class="p">],</span>
     <span class="s1">&#39;vect__token_pattern&#39;</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;\w{1,}&#39;</span><span class="p">],</span> 
     <span class="s1">&#39;vect__ngram_range&#39;</span> <span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span>
-    <span class="s1">&#39;scaler__with_mean&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="kc">False</span><span class="p">],</span>
+    <span class="s1">&#39;scaler&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">],</span>
     <span class="s1">&#39;red_svd__n_components&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span>
-    <span class="s1">&#39;clf_knn__n_neighbors&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+    <span class="s1">&#39;clf_knn__n_neighbors&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+    <span class="s1">&#39;red_percentile__score_func&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="n">f_classif</span><span class="p">],</span>
+    <span class="s1">&#39;red_percentile__percentile&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span>
+    <span class="s1">&#39;red_kbest__k&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span>  
 <span class="p">}</span>
 
 <span class="n">eng_and_custom_stopwords</span> <span class="o">=</span> <span class="n">improve_stop_words</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
@@ -14001,14 +14458,17 @@ weighted avg       0.91      0.91      0.91        33
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>448
+<pre>462
 ### Reducer: svd   Classifier: knn
-	clf_knn__n_neighbors: 5
+
+Best parameters
+	clf_knn__n_neighbors: 2
 	red_svd__n_components: 2
-	scaler__with_mean: False
+	scaler: None
 	vect__analyzer: &#39;word&#39;
+	vect__max_df: 5.0
 	vect__max_features: 900
-	vect__min_df: 5
+	vect__min_df: 1
 	vect__ngram_range: (1, 2)
 	vect__norm: &#39;l2&#39;
 	vect__smooth_idf: True
@@ -14016,70 +14476,205 @@ weighted avg       0.91      0.91      0.91        33
 	vect__strip_accents: &#39;unicode&#39;
 	vect__sublinear_tf: True
 	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.8787878787878788
               precision    recall  f1-score   support
 
-           0       0.96      0.91      0.93       163
-           1       0.92      0.96      0.94       167
+           0       0.87      0.87      0.87        15
+           1       0.89      0.89      0.89        18
 
-   micro avg       0.94      0.94      0.94       330
-   macro avg       0.94      0.94      0.94       330
-weighted avg       0.94      0.94      0.94       330
+   micro avg       0.88      0.88      0.88        33
+   macro avg       0.88      0.88      0.88        33
+weighted avg       0.88      0.88      0.88        33
 
-[[149  14]
- [  7 160]]
-### Reducer: None   Classifier: knn
+[[13  2]
+ [ 2 16]]
+### Reducer: kbest   Classifier: knn
+
+Best parameters
 	clf_knn__n_neighbors: 5
-	scaler__with_mean: False
+	red_kbest__k: 3
+	scaler: None
 	vect__analyzer: &#39;word&#39;
-	vect__max_features: 1000
+	vect__max_df: 1.0
+	vect__max_features: 900
 	vect__min_df: 6
 	vect__ngram_range: (1, 2)
-	vect__norm: &#39;l2&#39;
+	vect__norm: &#39;l1&#39;
 	vect__smooth_idf: True
 	vect__stop_words: None
 	vect__strip_accents: &#39;unicode&#39;
 	vect__sublinear_tf: True
 	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9393939393939394
               precision    recall  f1-score   support
 
-           0       0.94      0.93      0.94       163
-           1       0.93      0.95      0.94       167
+           0       1.00      0.87      0.93        15
+           1       0.90      1.00      0.95        18
 
-   micro avg       0.94      0.94      0.94       330
-   macro avg       0.94      0.94      0.94       330
-weighted avg       0.94      0.94      0.94       330
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.95      0.93      0.94        33
+weighted avg       0.95      0.94      0.94        33
 
-[[152  11]
- [  9 158]]
+[[13  2]
+ [ 0 18]]
+### Reducer: percentile   Classifier: knn
+
+Best parameters
+	clf_knn__n_neighbors: 5
+	red_percentile__percentile: 10
+	red_percentile__score_func: &lt;function f_classif at 0x1a1b98f1e0&gt;
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 1000
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l1&#39;
+	vect__smooth_idf: True
+	vect__stop_words: &#39;english&#39;
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.8181818181818182
+              precision    recall  f1-score   support
+
+           0       0.74      0.93      0.82        15
+           1       0.93      0.72      0.81        18
+
+   micro avg       0.82      0.82      0.82        33
+   macro avg       0.83      0.83      0.82        33
+weighted avg       0.84      0.82      0.82        33
+
+[[14  1]
+ [ 5 13]]
+### Reducer: None   Classifier: knn
+
+Best parameters
+	clf_knn__n_neighbors: 2
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 1000
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l2&#39;
+	vect__smooth_idf: True
+	vect__stop_words: &#39;english&#39;
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.8484848484848485
+              precision    recall  f1-score   support
+
+           0       0.78      0.93      0.85        15
+           1       0.93      0.78      0.85        18
+
+   micro avg       0.85      0.85      0.85        33
+   macro avg       0.86      0.86      0.85        33
+weighted avg       0.86      0.85      0.85        33
+
+[[14  1]
+ [ 4 14]]
 ### Reducer: svd   Classifier: dtree
-	red_svd__n_components: 30
-	scaler__with_mean: False
+
+Best parameters
+	red_svd__n_components: 2
+	scaler: None
 	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
 	vect__max_features: 1000
-	vect__min_df: 6
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l2&#39;
+	vect__smooth_idf: True
+	vect__stop_words: None
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9090909090909091
+              precision    recall  f1-score   support
+
+           0       0.88      0.93      0.90        15
+           1       0.94      0.89      0.91        18
+
+   micro avg       0.91      0.91      0.91        33
+   macro avg       0.91      0.91      0.91        33
+weighted avg       0.91      0.91      0.91        33
+
+[[14  1]
+ [ 2 16]]
+### Reducer: kbest   Classifier: dtree
+
+Best parameters
+	red_kbest__k: 3
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 900
+	vect__min_df: 1
 	vect__ngram_range: (1, 2)
 	vect__norm: &#39;l1&#39;
+	vect__smooth_idf: True
+	vect__stop_words: None
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9090909090909091
+              precision    recall  f1-score   support
+
+           0       0.88      0.93      0.90        15
+           1       0.94      0.89      0.91        18
+
+   micro avg       0.91      0.91      0.91        33
+   macro avg       0.91      0.91      0.91        33
+weighted avg       0.91      0.91      0.91        33
+
+[[14  1]
+ [ 2 16]]
+### Reducer: percentile   Classifier: dtree
+
+Best parameters
+	red_percentile__percentile: 10
+	red_percentile__score_func: &lt;function f_classif at 0x1a1b98f1e0&gt;
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 1000
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l2&#39;
 	vect__smooth_idf: True
 	vect__stop_words: &#39;english&#39;
 	vect__strip_accents: &#39;unicode&#39;
 	vect__sublinear_tf: True
 	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9393939393939394
               precision    recall  f1-score   support
 
-           0       0.94      0.92      0.93       163
-           1       0.92      0.94      0.93       167
+           0       1.00      0.87      0.93        15
+           1       0.90      1.00      0.95        18
 
-   micro avg       0.93      0.93      0.93       330
-   macro avg       0.93      0.93      0.93       330
-weighted avg       0.93      0.93      0.93       330
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.95      0.93      0.94        33
+weighted avg       0.95      0.94      0.94        33
 
-[[150  13]
- [ 10 157]]
+[[13  2]
+ [ 0 18]]
 ### Reducer: None   Classifier: dtree
-	scaler__with_mean: False
+
+Best parameters
+	scaler: None
 	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
 	vect__max_features: 900
-	vect__min_df: 6
+	vect__min_df: 1
 	vect__ngram_range: (1, 2)
 	vect__norm: None
 	vect__smooth_idf: True
@@ -14087,70 +14682,28 @@ weighted avg       0.93      0.93      0.93       330
 	vect__strip_accents: &#39;unicode&#39;
 	vect__sublinear_tf: True
 	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9090909090909091
               precision    recall  f1-score   support
 
-           0       0.83      0.84      0.83       163
-           1       0.84      0.83      0.83       167
+           0       1.00      0.80      0.89        15
+           1       0.86      1.00      0.92        18
 
-   micro avg       0.83      0.83      0.83       330
-   macro avg       0.83      0.83      0.83       330
-weighted avg       0.83      0.83      0.83       330
+   micro avg       0.91      0.91      0.91        33
+   macro avg       0.93      0.90      0.91        33
+weighted avg       0.92      0.91      0.91        33
 
-[[137  26]
- [ 29 138]]
+[[12  3]
+ [ 0 18]]
 ### Reducer: svd   Classifier: nb
-	red_svd__n_components: 30
-	scaler__with_mean: False
-	vect__analyzer: &#39;word&#39;
-	vect__max_features: 1000
-	vect__min_df: 5
-	vect__ngram_range: (1, 2)
-	vect__norm: &#39;l2&#39;
-	vect__smooth_idf: True
-	vect__stop_words: None
-	vect__strip_accents: &#39;unicode&#39;
-	vect__sublinear_tf: True
-	vect__token_pattern: &#39;\\w{1,}&#39;
-              precision    recall  f1-score   support
 
-           0       0.95      0.96      0.96       163
-           1       0.96      0.95      0.96       167
-
-   micro avg       0.96      0.96      0.96       330
-   macro avg       0.96      0.96      0.96       330
-weighted avg       0.96      0.96      0.96       330
-
-[[157   6]
- [  8 159]]
-### Reducer: None   Classifier: nb
-	scaler__with_mean: False
-	vect__analyzer: &#39;word&#39;
-	vect__max_features: 1000
-	vect__min_df: 6
-	vect__ngram_range: (1, 2)
-	vect__norm: &#39;l2&#39;
-	vect__smooth_idf: True
-	vect__stop_words: &#39;english&#39;
-	vect__strip_accents: &#39;unicode&#39;
-	vect__sublinear_tf: True
-	vect__token_pattern: &#39;\\w{1,}&#39;
-              precision    recall  f1-score   support
-
-           0       0.97      0.88      0.92       163
-           1       0.89      0.97      0.93       167
-
-   micro avg       0.92      0.92      0.92       330
-   macro avg       0.93      0.92      0.92       330
-weighted avg       0.93      0.92      0.92       330
-
-[[143  20]
- [  5 162]]
-### Reducer: svd   Classifier: lr
+Best parameters
 	red_svd__n_components: 40
-	scaler__with_mean: False
+	scaler: None
 	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
 	vect__max_features: 900
-	vect__min_df: 5
+	vect__min_df: 1
 	vect__ngram_range: (1, 2)
 	vect__norm: &#39;l2&#39;
 	vect__smooth_idf: True
@@ -14158,91 +14711,26 @@ weighted avg       0.93      0.92      0.92       330
 	vect__strip_accents: &#39;unicode&#39;
 	vect__sublinear_tf: True
 	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9090909090909091
               precision    recall  f1-score   support
 
-           0       0.97      0.95      0.96       163
-           1       0.95      0.97      0.96       167
+           0       0.88      0.93      0.90        15
+           1       0.94      0.89      0.91        18
 
-   micro avg       0.96      0.96      0.96       330
-   macro avg       0.96      0.96      0.96       330
-weighted avg       0.96      0.96      0.96       330
+   micro avg       0.91      0.91      0.91        33
+   macro avg       0.91      0.91      0.91        33
+weighted avg       0.91      0.91      0.91        33
 
-[[155   8]
- [  5 162]]
-### Reducer: None   Classifier: lr
-	scaler__with_mean: False
+[[14  1]
+ [ 2 16]]
+### Reducer: kbest   Classifier: nb
+
+Best parameters
+	red_kbest__k: 3
+	scaler: None
 	vect__analyzer: &#39;word&#39;
-	vect__max_features: 1000
-	vect__min_df: 6
-	vect__ngram_range: (1, 2)
-	vect__norm: &#39;l2&#39;
-	vect__smooth_idf: True
-	vect__stop_words: None
-	vect__strip_accents: &#39;unicode&#39;
-	vect__sublinear_tf: True
-	vect__token_pattern: &#39;\\w{1,}&#39;
-              precision    recall  f1-score   support
-
-           0       0.98      0.94      0.96       163
-           1       0.94      0.98      0.96       167
-
-   micro avg       0.96      0.96      0.96       330
-   macro avg       0.96      0.96      0.96       330
-weighted avg       0.96      0.96      0.96       330
-
-[[153  10]
- [  3 164]]
-### Reducer: svd   Classifier: svc
-	red_svd__n_components: 40
-	scaler__with_mean: False
-	vect__analyzer: &#39;word&#39;
-	vect__max_features: 900
-	vect__min_df: 5
-	vect__ngram_range: (1, 2)
-	vect__norm: &#39;l2&#39;
-	vect__smooth_idf: True
-	vect__stop_words: None
-	vect__strip_accents: &#39;unicode&#39;
-	vect__sublinear_tf: True
-	vect__token_pattern: &#39;\\w{1,}&#39;
-              precision    recall  f1-score   support
-
-           0       0.97      0.94      0.96       163
-           1       0.95      0.98      0.96       167
-
-   micro avg       0.96      0.96      0.96       330
-   macro avg       0.96      0.96      0.96       330
-weighted avg       0.96      0.96      0.96       330
-
-[[154   9]
- [  4 163]]
-### Reducer: None   Classifier: svc
-	scaler__with_mean: False
-	vect__analyzer: &#39;word&#39;
-	vect__max_features: 900
-	vect__min_df: 6
-	vect__ngram_range: (1, 2)
-	vect__norm: None
-	vect__smooth_idf: True
-	vect__stop_words: &#39;english&#39;
-	vect__strip_accents: &#39;unicode&#39;
-	vect__sublinear_tf: True
-	vect__token_pattern: &#39;\\w{1,}&#39;
-              precision    recall  f1-score   support
-
-           0       0.97      0.94      0.96       163
-           1       0.95      0.98      0.96       167
-
-   micro avg       0.96      0.96      0.96       330
-   macro avg       0.96      0.96      0.96       330
-weighted avg       0.96      0.96      0.96       330
-
-[[154   9]
- [  4 163]]
-### Reducer: svd   Classifier: lsvc
-	red_svd__n_components: 40
-	scaler__with_mean: False
-	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
 	vect__max_features: 900
 	vect__min_df: 5
 	vect__ngram_range: (1, 2)
@@ -14252,22 +14740,86 @@ weighted avg       0.96      0.96      0.96       330
 	vect__strip_accents: &#39;unicode&#39;
 	vect__sublinear_tf: True
 	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.5151515151515151
               precision    recall  f1-score   support
 
-           0       0.96      0.96      0.96       163
-           1       0.96      0.96      0.96       167
+           0       0.48      1.00      0.65        15
+           1       1.00      0.11      0.20        18
 
-   micro avg       0.96      0.96      0.96       330
-   macro avg       0.96      0.96      0.96       330
-weighted avg       0.96      0.96      0.96       330
+   micro avg       0.52      0.52      0.52        33
+   macro avg       0.74      0.56      0.43        33
+weighted avg       0.77      0.52      0.41        33
 
-[[156   7]
- [  6 161]]
-### Reducer: None   Classifier: lsvc
-	scaler__with_mean: False
+[[15  0]
+ [16  2]]
+### Reducer: percentile   Classifier: nb
+
+Best parameters
+	red_percentile__percentile: 10
+	red_percentile__score_func: &lt;function f_classif at 0x1a1b98f1e0&gt;
+	scaler: None
 	vect__analyzer: &#39;word&#39;
-	vect__max_features: 1000
+	vect__max_df: 1.0
+	vect__max_features: 900
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l2&#39;
+	vect__smooth_idf: True
+	vect__stop_words: &#39;english&#39;
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.8787878787878788
+              precision    recall  f1-score   support
+
+           0       0.92      0.80      0.86        15
+           1       0.85      0.94      0.89        18
+
+   micro avg       0.88      0.88      0.88        33
+   macro avg       0.89      0.87      0.88        33
+weighted avg       0.88      0.88      0.88        33
+
+[[12  3]
+ [ 1 17]]
+### Reducer: None   Classifier: nb
+
+Best parameters
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 900
 	vect__min_df: 6
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l2&#39;
+	vect__smooth_idf: True
+	vect__stop_words: &#39;english&#39;
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9090909090909091
+              precision    recall  f1-score   support
+
+           0       0.93      0.87      0.90        15
+           1       0.89      0.94      0.92        18
+
+   micro avg       0.91      0.91      0.91        33
+   macro avg       0.91      0.91      0.91        33
+weighted avg       0.91      0.91      0.91        33
+
+[[13  2]
+ [ 1 17]]
+### Reducer: svd   Classifier: lr
+
+Best parameters
+	red_svd__n_components: 2
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 900
+	vect__min_df: 1
 	vect__ngram_range: (1, 2)
 	vect__norm: &#39;l2&#39;
 	vect__smooth_idf: True
@@ -14275,17 +14827,338 @@ weighted avg       0.96      0.96      0.96       330
 	vect__strip_accents: &#39;unicode&#39;
 	vect__sublinear_tf: True
 	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9090909090909091
               precision    recall  f1-score   support
 
-           0       0.98      0.94      0.96       163
-           1       0.94      0.98      0.96       167
+           0       0.88      0.93      0.90        15
+           1       0.94      0.89      0.91        18
 
-   micro avg       0.96      0.96      0.96       330
-   macro avg       0.96      0.96      0.96       330
-weighted avg       0.96      0.96      0.96       330
+   micro avg       0.91      0.91      0.91        33
+   macro avg       0.91      0.91      0.91        33
+weighted avg       0.91      0.91      0.91        33
 
-[[153  10]
- [  3 164]]
+[[14  1]
+ [ 2 16]]
+### Reducer: kbest   Classifier: lr
+
+Best parameters
+	red_kbest__k: 3
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 900
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: None
+	vect__smooth_idf: True
+	vect__stop_words: None
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9393939393939394
+              precision    recall  f1-score   support
+
+           0       1.00      0.87      0.93        15
+           1       0.90      1.00      0.95        18
+
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.95      0.93      0.94        33
+weighted avg       0.95      0.94      0.94        33
+
+[[13  2]
+ [ 0 18]]
+### Reducer: percentile   Classifier: lr
+
+Best parameters
+	red_percentile__percentile: 10
+	red_percentile__score_func: &lt;function f_classif at 0x1a1b98f1e0&gt;
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 1000
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l2&#39;
+	vect__smooth_idf: True
+	vect__stop_words: &#39;english&#39;
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9393939393939394
+              precision    recall  f1-score   support
+
+           0       0.93      0.93      0.93        15
+           1       0.94      0.94      0.94        18
+
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.94      0.94      0.94        33
+weighted avg       0.94      0.94      0.94        33
+
+[[14  1]
+ [ 1 17]]
+### Reducer: None   Classifier: lr
+
+Best parameters
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 900
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l2&#39;
+	vect__smooth_idf: True
+	vect__stop_words: &#39;english&#39;
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9393939393939394
+              precision    recall  f1-score   support
+
+           0       0.93      0.93      0.93        15
+           1       0.94      0.94      0.94        18
+
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.94      0.94      0.94        33
+weighted avg       0.94      0.94      0.94        33
+
+[[14  1]
+ [ 1 17]]
+### Reducer: svd   Classifier: svc
+
+Best parameters
+	red_svd__n_components: 2
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 1000
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l2&#39;
+	vect__smooth_idf: True
+	vect__stop_words: &#39;english&#39;
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9393939393939394
+              precision    recall  f1-score   support
+
+           0       0.93      0.93      0.93        15
+           1       0.94      0.94      0.94        18
+
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.94      0.94      0.94        33
+weighted avg       0.94      0.94      0.94        33
+
+[[14  1]
+ [ 1 17]]
+### Reducer: kbest   Classifier: svc
+
+Best parameters
+	red_kbest__k: 3
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 900
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: None
+	vect__smooth_idf: True
+	vect__stop_words: None
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9393939393939394
+              precision    recall  f1-score   support
+
+           0       1.00      0.87      0.93        15
+           1       0.90      1.00      0.95        18
+
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.95      0.93      0.94        33
+weighted avg       0.95      0.94      0.94        33
+
+[[13  2]
+ [ 0 18]]
+### Reducer: percentile   Classifier: svc
+
+Best parameters
+	red_percentile__percentile: 10
+	red_percentile__score_func: &lt;function f_classif at 0x1a1b98f1e0&gt;
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 900
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: None
+	vect__smooth_idf: True
+	vect__stop_words: &#39;english&#39;
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9393939393939394
+              precision    recall  f1-score   support
+
+           0       1.00      0.87      0.93        15
+           1       0.90      1.00      0.95        18
+
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.95      0.93      0.94        33
+weighted avg       0.95      0.94      0.94        33
+
+[[13  2]
+ [ 0 18]]
+### Reducer: None   Classifier: svc
+
+Best parameters
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 900
+	vect__min_df: 6
+	vect__ngram_range: (1, 2)
+	vect__norm: None
+	vect__smooth_idf: True
+	vect__stop_words: None
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9696969696969697
+              precision    recall  f1-score   support
+
+           0       1.00      0.93      0.97        15
+           1       0.95      1.00      0.97        18
+
+   micro avg       0.97      0.97      0.97        33
+   macro avg       0.97      0.97      0.97        33
+weighted avg       0.97      0.97      0.97        33
+
+[[14  1]
+ [ 0 18]]
+### Reducer: svd   Classifier: lsvc
+
+Best parameters
+	red_svd__n_components: 2
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 900
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l2&#39;
+	vect__smooth_idf: True
+	vect__stop_words: &#39;english&#39;
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9393939393939394
+              precision    recall  f1-score   support
+
+           0       0.93      0.93      0.93        15
+           1       0.94      0.94      0.94        18
+
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.94      0.94      0.94        33
+weighted avg       0.94      0.94      0.94        33
+
+[[14  1]
+ [ 1 17]]
+### Reducer: kbest   Classifier: lsvc
+
+Best parameters
+	red_kbest__k: 3
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 900
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: None
+	vect__smooth_idf: True
+	vect__stop_words: None
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.8484848484848485
+              precision    recall  f1-score   support
+
+           0       0.78      0.93      0.85        15
+           1       0.93      0.78      0.85        18
+
+   micro avg       0.85      0.85      0.85        33
+   macro avg       0.86      0.86      0.85        33
+weighted avg       0.86      0.85      0.85        33
+
+[[14  1]
+ [ 4 14]]
+### Reducer: percentile   Classifier: lsvc
+
+Best parameters
+	red_percentile__percentile: 10
+	red_percentile__score_func: &lt;function f_classif at 0x1a1b98f1e0&gt;
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 6
+	vect__max_features: 900
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l2&#39;
+	vect__smooth_idf: True
+	vect__stop_words: &#39;english&#39;
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9090909090909091
+              precision    recall  f1-score   support
+
+           0       0.93      0.87      0.90        15
+           1       0.89      0.94      0.92        18
+
+   micro avg       0.91      0.91      0.91        33
+   macro avg       0.91      0.91      0.91        33
+weighted avg       0.91      0.91      0.91        33
+
+[[13  2]
+ [ 1 17]]
+### Reducer: None   Classifier: lsvc
+
+Best parameters
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 900
+	vect__min_df: 5
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l1&#39;
+	vect__smooth_idf: True
+	vect__stop_words: &#39;english&#39;
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.9090909090909091
+              precision    recall  f1-score   support
+
+           0       0.93      0.87      0.90        15
+           1       0.89      0.94      0.92        18
+
+   micro avg       0.91      0.91      0.91        33
+   macro avg       0.91      0.91      0.91        33
+weighted avg       0.91      0.91      0.91        33
+
+[[13  2]
+ [ 1 17]]
 </pre>
 </div>
 </div>
@@ -14331,9 +15204,299 @@ weighted avg       0.96      0.96      0.96       330
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Main-process-with-prefixed-parameters">Main process with prefixed parameters<a class="anchor-link" href="#Main-process-with-prefixed-parameters">&#182;</a></h2>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[612]:</div>
+<div class="prompt input_prompt">In&nbsp;[891]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">param_set_1</span> <span class="o">=</span> <span class="p">{</span> 
+    <span class="s1">&#39;vect__smooth_idf&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;vect__sublinear_tf&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;vect__max_features&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="s1">&#39;vect__min_df&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s1">&#39;vect__max_df&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="s1">&#39;vect__stop_words&#39;</span><span class="p">:</span> <span class="s1">&#39;english&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;vect__strip_accents&#39;</span> <span class="p">:</span> <span class="s1">&#39;unicode&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;vect__analyzer&#39;</span> <span class="p">:</span> <span class="s1">&#39;word&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;vect__token_pattern&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;\w{1,}&#39;</span><span class="p">,</span> 
+    <span class="s1">&#39;vect__ngram_range&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="c1">#&#39;scaler__with_mean&#39; : False,</span>
+    <span class="s1">&#39;vect__norm&#39;</span><span class="p">:</span> <span class="s1">&#39;l2&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;red_svd__n_components&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="s1">&#39;clf_knn__n_neighbors&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s1">&#39;cluster_kmeans__n_clusters&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s1">&#39;red_kbest__k&#39;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s1">&#39;red_percentile__score_func&#39;</span> <span class="p">:</span> <span class="n">f_classif</span><span class="p">,</span>
+    <span class="s1">&#39;red_percentile__percentile&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s1">&#39;scaler&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="s1">&#39;norm&#39;</span><span class="p">:</span> <span class="kc">None</span>
+<span class="p">}</span>
+
+<span class="n">process_classifications</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">param_set_1</span><span class="p">,</span> <span class="n">reducers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;svd&#39;</span><span class="p">],</span> <span class="n">classifiers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;kmeans&#39;</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>### Reducer: svd   Classifier: kmeans
+Pipeline {&#39;vect&#39;: TfidfVectorizer(analyzer=&#39;word&#39;, binary=False, decode_error=&#39;strict&#39;,
+        dtype=&lt;class &#39;numpy.float64&#39;&gt;, encoding=&#39;utf-8&#39;, input=&#39;content&#39;,
+        lowercase=True, max_df=1.0, max_features=1000, min_df=1,
+        ngram_range=(1, 2), norm=&#39;l2&#39;, preprocessor=None, smooth_idf=True,
+        stop_words=&#39;english&#39;, strip_accents=&#39;unicode&#39;, sublinear_tf=True,
+        token_pattern=&#39;\\w{1,}&#39;, tokenizer=None, use_idf=True,
+        vocabulary=None), &#39;scaler&#39;: None, &#39;red_svd&#39;: TruncatedSVD(algorithm=&#39;randomized&#39;, n_components=100, n_iter=5,
+       random_state=None, tol=0.0), &#39;norm&#39;: None, &#39;cluster_kmeans&#39;: KMeans(algorithm=&#39;auto&#39;, copy_x=True, init=&#39;k-means++&#39;, max_iter=300,
+    n_clusters=2, n_init=10, n_jobs=None, precompute_distances=&#39;auto&#39;,
+    random_state=None, tol=0.0001, verbose=0)}
+
+Accuracy 0.8787878787878788
+              precision    recall  f1-score   support
+
+           0       1.00      0.73      0.85        15
+           1       0.82      1.00      0.90        18
+
+   micro avg       0.88      0.88      0.88        33
+   macro avg       0.91      0.87      0.87        33
+weighted avg       0.90      0.88      0.88        33
+
+[[11  4]
+ [ 0 18]]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Main-process-with-grid-search-parameters">Main process with grid search parameters<a class="anchor-link" href="#Main-process-with-grid-search-parameters">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[892]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">eng_and_custom_stopwords</span> <span class="o">=</span> <span class="n">improve_stop_words</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">parameters_grid</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s1">&#39;vect__norm&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;l1&#39;</span><span class="p">,</span> <span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+    <span class="s1">&#39;vect__smooth_idf&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">],</span>
+    <span class="s1">&#39;vect__sublinear_tf&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">],</span>
+    <span class="s1">&#39;vect__max_features&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
+    <span class="s1">&#39;vect__min_df&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+    <span class="s1">&#39;vect__max_df&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+    <span class="s1">&#39;vect__stop_words&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;english&#39;</span><span class="p">,</span> <span class="n">eng_and_custom_stopwords</span><span class="p">],</span>
+    <span class="s1">&#39;vect__strip_accents&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;unicode&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;vect__analyzer&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;word&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;vect__token_pattern&#39;</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;\w{1,}&#39;</span><span class="p">],</span> 
+    <span class="s1">&#39;vect__ngram_range&#39;</span> <span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span>
+    <span class="s1">&#39;scaler&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+    <span class="s1">&#39;red_svd__n_components&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span>
+    <span class="s1">&#39;clf_knn__n_neighbors&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+    <span class="s1">&#39;cluster_kmeans__n_clusters&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+    <span class="s1">&#39;norm&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">]},</span>
+    <span class="c1"># without svd</span>
+    <span class="p">{</span><span class="s1">&#39;vect__norm&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;l1&#39;</span><span class="p">,</span> <span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+    <span class="s1">&#39;vect__smooth_idf&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">],</span>
+    <span class="s1">&#39;vect__sublinear_tf&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">],</span>
+    <span class="s1">&#39;vect__max_features&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
+    <span class="s1">&#39;vect__min_df&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+    <span class="s1">&#39;vect__max_df&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+    <span class="s1">&#39;vect__stop_words&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;english&#39;</span><span class="p">,</span> <span class="n">eng_and_custom_stopwords</span><span class="p">],</span>
+    <span class="s1">&#39;vect__strip_accents&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;unicode&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;vect__analyzer&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;word&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;vect__token_pattern&#39;</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;\w{1,}&#39;</span><span class="p">],</span> 
+    <span class="s1">&#39;vect__ngram_range&#39;</span> <span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span>
+    <span class="s1">&#39;scaler&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+    <span class="s1">&#39;red_svd__n_components&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span>
+    <span class="s1">&#39;clf_knn__n_neighbors&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+    <span class="s1">&#39;cluster_kmeans__n_clusters&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+    <span class="s1">&#39;red__svd&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">]}</span>
+<span class="p">]</span>
+
+<span class="n">eng_and_custom_stopwords</span> <span class="o">=</span> <span class="n">improve_stop_words</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="c1">#prediction_metrics_grid(X_train, y_train, X_test, y_test, parameters_grid, reducer=&quot;reducer&quot;, classifier=&quot;kmeans&quot;, cv=CV)</span>
+<span class="n">process_classifications_grid</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">parameters_grid</span><span class="p">,</span> <span class="n">classifiers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;kmeans&quot;</span><span class="p">],</span> <span class="n">cv</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>462
+462
+### Reducer: svd   Classifier: kmeans
+
+Best parameters
+	cluster_kmeans__n_clusters: 2
+	norm: None
+	red_svd__n_components: 2
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 30
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l1&#39;
+	vect__smooth_idf: True
+	vect__stop_words: None
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.7878787878787878
+              precision    recall  f1-score   support
+
+           0       1.00      0.53      0.70        15
+           1       0.72      1.00      0.84        18
+
+   micro avg       0.79      0.79      0.79        33
+   macro avg       0.86      0.77      0.77        33
+weighted avg       0.85      0.79      0.77        33
+
+[[ 8  7]
+ [ 0 18]]
+### Reducer: kbest   Classifier: kmeans
+
+Best parameters
+	cluster_kmeans__n_clusters: 2
+	norm: None
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 30
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l1&#39;
+	vect__smooth_idf: True
+	vect__stop_words: None
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.8181818181818182
+              precision    recall  f1-score   support
+
+           0       0.91      0.67      0.77        15
+           1       0.77      0.94      0.85        18
+
+   micro avg       0.82      0.82      0.82        33
+   macro avg       0.84      0.81      0.81        33
+weighted avg       0.83      0.82      0.81        33
+
+[[10  5]
+ [ 1 17]]
+### Reducer: percentile   Classifier: kmeans
+
+Best parameters
+	cluster_kmeans__n_clusters: 2
+	norm: None
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 20
+	vect__min_df: 1
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l1&#39;
+	vect__smooth_idf: True
+	vect__stop_words: None
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.696969696969697
+              precision    recall  f1-score   support
+
+           0       0.86      0.40      0.55        15
+           1       0.65      0.94      0.77        18
+
+   micro avg       0.70      0.70      0.70        33
+   macro avg       0.76      0.67      0.66        33
+weighted avg       0.75      0.70      0.67        33
+
+[[ 6  9]
+ [ 1 17]]
+### Reducer: None   Classifier: kmeans
+
+Best parameters
+	cluster_kmeans__n_clusters: 2
+	norm: None
+	scaler: None
+	vect__analyzer: &#39;word&#39;
+	vect__max_df: 1.0
+	vect__max_features: 20
+	vect__min_df: 5
+	vect__ngram_range: (1, 2)
+	vect__norm: &#39;l1&#39;
+	vect__smooth_idf: True
+	vect__stop_words: None
+	vect__strip_accents: &#39;unicode&#39;
+	vect__sublinear_tf: True
+	vect__token_pattern: &#39;\\w{1,}&#39;
+
+Accuracy 0.7575757575757576
+              precision    recall  f1-score   support
+
+           0       0.89      0.53      0.67        15
+           1       0.71      0.94      0.81        18
+
+   micro avg       0.76      0.76      0.76        33
+   macro avg       0.80      0.74      0.74        33
+weighted avg       0.79      0.76      0.74        33
+
+[[ 8  7]
+ [ 1 17]]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Reference-process">Reference process<a class="anchor-link" href="#Reference-process">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[871]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="k">import</span> <span class="n">KMeans</span>
@@ -14342,29 +15505,40 @@ weighted avg       0.96      0.96      0.96       330
 <span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="k">import</span> <span class="n">make_pipeline</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">Normalizer</span>
 
-<span class="n">vectorizador</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">max_df</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">max_features</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span>
-                               <span class="n">min_df</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stop_words</span><span class="o">=</span><span class="s1">&#39;english&#39;</span><span class="p">,</span>
-                               <span class="c1">#stop_words=stopwords,</span>
-                               <span class="c1">#token_pattern=r&#39;(?u)\b[A-Za-z]+\b&#39;,</span>
-                               <span class="c1">#token_pattern=r&#39;(?ui)\b\w*[a-z]+\w*\b&#39;,</span>
-                               <span class="n">use_idf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">vectorizador</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_X_transform</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+    <span class="n">vectorizador</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">max_df</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">max_features</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span>
+                                   <span class="n">min_df</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stop_words</span><span class="o">=</span><span class="s1">&#39;english&#39;</span><span class="p">,</span>
+                                   <span class="c1">#stop_words=stopwords,</span>
+                                   <span class="c1">#token_pattern=r&#39;(?u)\b[A-Za-z]+\b&#39;,</span>
+                                   <span class="c1">#token_pattern=r&#39;(?ui)\b\w*[a-z]+\w*\b&#39;,</span>
+                                   <span class="n">use_idf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="n">vectorizador</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">analyzer</span><span class="o">=</span><span class="s1">&#39;word&#39;</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">decode_error</span><span class="o">=</span><span class="s1">&#39;strict&#39;</span><span class="p">,</span>
+        <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="s1">&#39;content&#39;</span><span class="p">,</span>
+        <span class="n">lowercase</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_df</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">max_features</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">min_df</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">ngram_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">preprocessor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smooth_idf</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">stop_words</span><span class="o">=</span><span class="s1">&#39;english&#39;</span><span class="p">,</span> <span class="n">strip_accents</span><span class="o">=</span><span class="s1">&#39;unicode&#39;</span><span class="p">,</span> <span class="n">sublinear_tf</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">token_pattern</span><span class="o">=</span><span class="s1">&#39;(?u)</span><span class="se">\\</span><span class="s1">b</span><span class="se">\\</span><span class="s1">w</span><span class="se">\\</span><span class="s1">w+</span><span class="se">\\</span><span class="s1">b&#39;</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_idf</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">vocabulary</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    
+    <span class="n">X</span> <span class="o">=</span> <span class="n">vectorizador</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="n">n_componentes</span> <span class="o">=</span> <span class="mi">100</span>
-<span class="n">svd_truncado</span> <span class="o">=</span> <span class="n">TruncatedSVD</span><span class="p">(</span><span class="n">n_componentes</span><span class="p">)</span>
-<span class="n">normalizador</span> <span class="o">=</span> <span class="n">Normalizer</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">n_componentes</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">svd_truncado</span> <span class="o">=</span> <span class="n">TruncatedSVD</span><span class="p">(</span><span class="n">n_componentes</span><span class="p">)</span>
+    <span class="n">normalizador</span> <span class="o">=</span> <span class="n">Normalizer</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<span class="n">lsa</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">svd_truncado</span><span class="p">,</span> <span class="n">normalizador</span><span class="p">)</span>
-<span class="c1">#lsa = svd_truncado</span>
+    <span class="n">lsa</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">svd_truncado</span><span class="p">,</span> <span class="n">normalizador</span><span class="p">)</span>
+    <span class="c1">#lsa = svd_truncado</span>
 
-<span class="n">X_lsa</span> <span class="o">=</span> <span class="n">lsa</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">X_lsa</span> <span class="o">=</span> <span class="n">lsa</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-<span class="n">varianza_explicada</span> <span class="o">=</span> <span class="n">svd_truncado</span><span class="o">.</span><span class="n">explained_variance_ratio_</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-<span class="n">normalizer</span> <span class="o">=</span> <span class="n">Normalizer</span><span class="p">()</span>
-<span class="n">X_lsa_norm</span> <span class="o">=</span> <span class="n">normalizer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_lsa</span><span class="p">)</span>
-<span class="n">X_km</span> <span class="o">=</span> <span class="n">X_lsa_norm</span>
+    <span class="n">varianza_explicada</span> <span class="o">=</span> <span class="n">svd_truncado</span><span class="o">.</span><span class="n">explained_variance_ratio_</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">normalizer</span> <span class="o">=</span> <span class="n">Normalizer</span><span class="p">()</span>
+    <span class="n">X_lsa_norm</span> <span class="o">=</span> <span class="n">normalizer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_lsa</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">X_lsa_norm</span>
 
+<span class="n">X_km</span> <span class="o">=</span> <span class="n">get_X_transform</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
 <span class="n">qmetric</span> <span class="o">=</span> <span class="n">calinski_harabaz_score</span>
 
 <span class="n">Nclusters_max</span> <span class="o">=</span> <span class="mi">15</span>
@@ -14374,7 +15548,7 @@ weighted avg       0.96      0.96      0.96       330
 <span class="n">inertias</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">models</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">kini</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">kfin</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">kfin</span> <span class="o">=</span> <span class="mi">20</span>
 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">kini</span><span class="p">,</span><span class="n">kfin</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evaluando k=</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">k</span><span class="p">)</span>
     <span class="n">km</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
@@ -14383,8 +15557,9 @@ weighted avg       0.96      0.96      0.96       330
     <span class="n">km</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_km</span><span class="p">)</span>
     <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">km</span><span class="p">)</span>
     <span class="n">inertias</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">km</span><span class="o">.</span><span class="n">inertia_</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">qualities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qmetric</span><span class="p">(</span><span class="n">X_km</span><span class="p">,</span> <span class="n">km</span><span class="o">.</span><span class="n">labels_</span><span class="p">))</span>
+        <span class="c1">#qualities.append(km.score(X_km))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">qualities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
@@ -14403,11 +15578,27 @@ weighted avg       0.96      0.96      0.96       330
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>(2692, 1000)
+<pre>(67, 1000)
 Evaluando k=1
 Evaluando k=2
 Evaluando k=3
 Evaluando k=4
+Evaluando k=5
+Evaluando k=6
+Evaluando k=7
+Evaluando k=8
+Evaluando k=9
+Evaluando k=10
+Evaluando k=11
+Evaluando k=12
+Evaluando k=13
+Evaluando k=14
+Evaluando k=15
+Evaluando k=16
+Evaluando k=17
+Evaluando k=18
+Evaluando k=19
+Evaluando k=20
 </pre>
 </div>
 </div>
@@ -14418,7 +15609,7 @@ Evaluando k=4
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[613]:</div>
+<div class="prompt input_prompt">In&nbsp;[872]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
@@ -14458,7 +15649,7 @@ Evaluando k=4
 
 
 <div class="output_png output_subarea ">
-<img src="TextMining_Assignment_files/TextMining_Assignment_18_0.png"
+<img src="TextMining_Assignment_files/TextMining_Assignment_23_0.png"
 >
 </div>
 
@@ -14482,22 +15673,28 @@ Number of clusters of best quality 2
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[616]:</div>
+<div class="prompt input_prompt">In&nbsp;[873]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># We choose the best option to evaluate the quality of prediction</span>
-
+<span class="n">X</span> <span class="o">=</span> <span class="n">X_test</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y_test</span>
+<span class="n">X_km</span> <span class="o">=</span> <span class="n">get_X_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">km</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X_km</span><span class="p">)</span>
+<span class="c1">#print(labels)</span>
 <span class="c1"># First we try with labels as is </span>
-<span class="n">labels_predicted</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">km</span><span class="o">.</span><span class="n">labels_</span><span class="p">]</span>
+<span class="n">labels_predicted</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
 <span class="n">predicted</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">labels_predicted</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
+<span class="c1">#print(labels_predicted)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
 
 <span class="c1"># Alternatively we invert the label to match the real labels of each group</span>
-<span class="n">labels_predicted</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">((</span><span class="n">label</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="k">2</span>) for label in km.labels_]
+<span class="n">labels_predicted</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">((</span><span class="n">label</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="k">2</span>) for label in labels]
+<span class="c1">#print(labels_predicted)</span>
 <span class="n">predicted</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">labels_predicted</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -14514,77 +15711,33 @@ Number of clusters of best quality 2
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>              precision    recall  f1-score   support
-
-           0       0.99      0.87      0.93      1348
-           1       0.88      0.99      0.93      1344
-
-   micro avg       0.93      0.93      0.93      2692
-   macro avg       0.94      0.93      0.93      2692
-weighted avg       0.94      0.93      0.93      2692
-
-[[1169  179]
- [   7 1337]]
+<pre>(33, 1000)
               precision    recall  f1-score   support
 
-           0       0.12      0.13      0.12      1348
-           1       0.01      0.01      0.01      1344
+           0       1.00      0.87      0.93        15
+           1       0.90      1.00      0.95        18
 
-   micro avg       0.07      0.07      0.07      2692
-   macro avg       0.06      0.07      0.07      2692
-weighted avg       0.06      0.07      0.07      2692
+   micro avg       0.94      0.94      0.94        33
+   macro avg       0.95      0.93      0.94        33
+weighted avg       0.95      0.94      0.94        33
 
-[[ 179 1169]
- [1337    7]]
+[[13  2]
+ [ 0 18]]
+              precision    recall  f1-score   support
+
+           0       0.10      0.13      0.11        15
+           1       0.00      0.00      0.00        18
+
+   micro avg       0.06      0.06      0.06        33
+   macro avg       0.05      0.07      0.06        33
+weighted avg       0.05      0.06      0.05        33
+
+[[ 2 13]
+ [18  0]]
 </pre>
 </div>
 </div>
 
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Pipelining">Pipelining<a class="anchor-link" href="#Pipelining">&#182;</a></h2><p>Can I put all in the pipeline defined previously?</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># First set of parameters</span>
-<span class="n">param_set_1</span> <span class="o">=</span> <span class="p">{</span> 
-    <span class="s1">&#39;vect__norm&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="s1">&#39;vect__smooth_idf&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;vect__sublinear_tf&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;vect__max_features&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
-    <span class="s1">&#39;vect__min_df&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
-    <span class="s1">&#39;vect__stop_words&#39;</span><span class="p">:</span> <span class="s1">&#39;english&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;vect__strip_accents&#39;</span> <span class="p">:</span> <span class="s1">&#39;unicode&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;vect__analyzer&#39;</span> <span class="p">:</span> <span class="s1">&#39;word&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;vect__token_pattern&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;\w{1,}&#39;</span><span class="p">,</span> 
-    <span class="s1">&#39;vect__ngram_range&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-    <span class="s1">&#39;scaler__with_mean&#39;</span> <span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s1">&#39;vect__norm&#39;</span><span class="p">:</span> <span class="s1">&#39;l2&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;red_svd__n_components&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
-    <span class="s1">&#39;clf_knn__n_neighbors&#39;</span> <span class="p">:</span> <span class="mi">2</span>
-<span class="p">}</span>
-
-<span class="c1"># More stop words</span>
-<span class="c1">#eng_and_custom_stopwords = improve_stop_words(X_train, 200)</span>
-<span class="c1">#param_set_1[&#39;vect__stop_words&#39;] = eng_and_custom_stopwords</span>
-
-<span class="n">process_classifications</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">param_set_1</span><span class="p">,</span> <span class="n">reducers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;svd&#39;</span><span class="p">],</span> <span class="n">classifiers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;kmeans&#39;</span><span class="p">])</span>
-
-<span class="c1">#process_classifications(X_train, y_train, X_test, y_test, param_set_1)</span>
-</pre></div>
-
-    </div>
 </div>
 </div>
 
@@ -14598,7 +15751,7 @@ weighted avg       0.06      0.07      0.07      2692
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[617]:</div>
+<div class="prompt input_prompt">In&nbsp;[896]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span>%%bash
@@ -14608,6 +15761,542 @@ jupyter nbconvert --to html_toc TextMining_Assignment.ipynb <span class="m">1</s
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex)
+ \write18 enabled.
+entering extended mode
+(./TextMining_Assignment.tex
+LaTeX2e &lt;2018-04-01&gt; patch level 2
+Babel &lt;3.18&gt; and hyphenation patterns for 84 language(s) loaded.
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/size11.clo))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/placeins/placeins.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/amssymb.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/amsfonts.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?&#39; option.
+(/usr/local/texlive/2018/texmf-dist/tex/latex/amsmath/amstext.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/amsmath/amsgen.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/amsmath/amsopn.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/amscls/amsthm.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/mathtools/mathtools.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/keyval.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/tools/calc.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/mathtools/mhsetup.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/fontenc.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/t1enc.def))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/mathpazo.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/graphicx.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/graphics.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/trig.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics-cfg/graphics.cfg)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics-def/pdftex.def)))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/caption/caption.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/caption/caption3.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/adjustbox/adjustbox.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+(/usr/local/texlive/2018/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/local/texlive/2018/texmf-dist/tex/generic/xkeyval/xkvutils.tex)))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/adjustbox/adjcalc.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/adjustbox/trimclip.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/collectbox/collectbox.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/adjustbox/tc-pdftex.def))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/ifoddpage/ifoddpage.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/varwidth/varwidth.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/xcolor/xcolor.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics-cfg/color.cfg))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/tools/enumerate.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/geometry/geometry.sty
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/ifpdf.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/ifvtex.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/ifxetex/ifxetex.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/textcomp.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/ts1enc.def
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/ts1enc.dfu)))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/upquote/upquote.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/eurosym/eurosym.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/ucs/ucs.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/ucs/data/uni-global.def))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/inputenc.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/ucs/utf8x.def))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/fancyvrb/fancyvrb.sty
+Style option: `fancyvrb&#39; v2.7a, with DG/SPQR fixes, and firstline=lastline fix 
+&lt;2008/02/07&gt; (tvz))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/grffile.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/ltxcmds.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/infwarerr.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/etexcmds.sty
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/ifluatex.sty))))
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/hyperref.sty
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/auxhook.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/pd1enc.def)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/latexconfig/hyperref.cfg)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/url/url.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/hpdftex.def
+(/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/tools/longtable.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/booktabs/booktabs.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/enumitem/enumitem.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/ulem/ulem.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/minted/minted.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/fvextra/fvextra.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/ifthen.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/etoolbox/etoolbox.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/lineno/lineno.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/tools/shellesc.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/catchfile.sty)
+(./TextMining_Assignment.w18))
+(/usr/local/texlive/2018/texmf-dist/tex/generic/xstring/xstring.sty
+(/usr/local/texlive/2018/texmf-dist/tex/generic/xstring/xstring.tex))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/framed/framed.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/float/float.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/tcolorbox/tcolorbox.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.te
+x
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/utilities/pgfutil-common-li
+sts.tex))
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.def
+(/usr/local/texlive/2018/texmf-dist/tex/latex/ms/everyshi.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/utilities/pgfkeysfiltered.c
+ode.tex))
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-pdftex.d
+ef
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-p
+df.def)))
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.
+code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.
+code.tex))
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.tex
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.tex
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.tex
+)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.code.
+tex
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.basic
+.code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.trigo
+nometric.code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.rando
+m.code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.compa
+rison.code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.base.
+code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.round
+.code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.misc.
+code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.integ
+erarithmetics.code.tex)))
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code.tex)
+)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.co
+de.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathconst
+ruct.code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusage
+.code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.co
+de.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphicst
+ate.code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransform
+ations.code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequick.cod
+e.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreobjects.c
+ode.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathproce
+ssing.code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.co
+de.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.cod
+e.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimage.cod
+e.tex
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexternal.
+code.tex))
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelayers.co
+de.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretranspare
+ncy.code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepatterns.
+code.tex)))
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.cod
+e.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code.
+tex)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-0-65.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-1-18.sty)) (/usr/local/texlive/2018/texmf-dist/tex/latex/tools/verbatim.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/environ/environ.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/trimspaces/trimspaces.sty)))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/tcolorbox/tcbminted.code.tex
+Library (tcolorbox): &#39;tcbminted.code.tex&#39; version &#39;4.13&#39;
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/tcolorbox/tcblistingscore.code.te
+x
+Library (tcolorbox): &#39;tcblistingscore.code.tex&#39; version &#39;4.13&#39;
+(/usr/local/texlive/2018/texmf-dist/tex/latex/tcolorbox/tcbprocessing.code.tex
+Library (tcolorbox): &#39;tcbprocessing.code.tex&#39; version &#39;4.13&#39;
+)))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/tcolorbox/tcbbreakable.code.tex
+Library (tcolorbox): &#39;tcbbreakable.code.tex&#39; version &#39;4.13&#39;
+) (/usr/local/texlive/2018/texmf-dist/tex/latex/tcolorbox/tcbskins.code.tex
+Library (tcolorbox): &#39;tcbskins.code.tex&#39; version &#39;4.13&#39;
+(/usr/local/texlive/2018/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/pgf/utilities/pgffor.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex)
+) (/usr/local/texlive/2018/texmf-dist/tex/latex/pgf/math/pgfmath.sty
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex))
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex)))
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.cod
+e.tex
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothan
+dlers.code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.cod
+e.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarytopaths.code.tex)))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/tcolorbox/tcbskinsjigsaw.code.tex
+Library (tcolorbox): &#39;tcbskinsjigsaw.code.tex&#39; version &#39;4.13&#39;
+)) (/usr/local/texlive/2018/texmf-dist/tex/latex/mdframed/mdframed.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/l3kernel/expl3.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/l3kernel/expl3-code.tex)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/l3kernel/l3pdfmode.def)))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/zref-abspage.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/zref-base.sty))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/needspace/needspace.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/mdframed/md-frame-1.mdf))/Users/nandoide/miniconda3/bin/pygmentize
+
+(./TextMining_Assignment.aux)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/ts1cmr.fd)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/t1ppl.fd)
+(/usr/local/texlive/2018/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+(/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/grfext.sty)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/caption/ltcaption.sty)
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+
+Package geometry Warning: The marginal notes overrun the paper.
+     Add 25.63757pt and more to the right margin.
+
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: &lt;default&gt;
+* layout: &lt;same size as paper&gt;
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(43.36243pt, 527.57014pt, 43.36243pt)
+* v-part:(T,H,B)=(72.26999pt, 650.43001pt, 72.26999pt)
+* \paperwidth=614.295pt
+* \paperheight=794.96999pt
+* \textwidth=527.57014pt
+* \textheight=650.43001pt
+* \oddsidemargin=-28.90756pt
+* \evensidemargin=-28.90756pt
+* \topmargin=-37.0pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=11.0pt
+* \footskip=30.0pt
+* \marginparwidth=59.0pt
+* \marginparsep=10.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/ucs/ucsencs.def)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/nameref.sty
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/gettitlestring.sty))
+(./TextMining_Assignment.out) (./TextMining_Assignment.out)
+ABD: EveryShipout initializing macros
+(/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/ot1ppl.fd)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/omlzplm.fd)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/omszplm.fd)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/omxzplm.fd)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/ot1zplm.fd)
+(./TextMining_Assignment.toc) [1{/usr/local/texlive/2018/texmf-var/fonts/map/pd
+ftex/updmap/pdftex.map}]
+(./_minted-TextMining_Assignment/default-pyg-prefix.pygstyle)
+(./_minted-TextMining_Assignment/default.pygstyle)
+(./_minted-TextMining_Assignment/FA1E651F3A29F7937E60C118AF6627598E129E4F64B03B
+8F0B2AED0BB08CDC78.pygtex
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/t1cmtt.fd)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/ts1cmtt.fd))
+(./_minted-TextMining_Assignment/9006A6D101C5D710AB12C9B4565F06788E129E4F64B03B
+8F0B2AED0BB08CDC78.pygtex) [2] [3]
+(./_minted-TextMining_Assignment/A62D4CCB14B75AD38D196EAF4176CB584DA8A1DE8B1567
+0E53453FD5845899A4.pygtex)
+(./_minted-TextMining_Assignment/069605CD30F9CF4918E0E83931C872BF8E129E4F64B03B
+8F0B2AED0BB08CDC78.pygtex)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/ts1ppl.fd) [4]
+(/usr/local/texlive/2018/texmf-dist/tex/latex/ucs/data/uni-0.def)
+(./_minted-TextMining_Assignment/9005DA984F12C89EE97763BED734E7918E129E4F64B03B
+8F0B2AED0BB08CDC78.pygtex)
+(./_minted-TextMining_Assignment/B404353C798FA969285D1977AD616A008E129E4F64B03B
+8F0B2AED0BB08CDC78.pygtex) [5] [6] [7] [8]
+(./_minted-TextMining_Assignment/E67B23F69C7543DC4B3CC9E8144538558E129E4F64B03B
+8F0B2AED0BB08CDC78.pygtex)
+(./_minted-TextMining_Assignment/B69688C1CC4F761BF3115E76940F13474DA8A1DE8B1567
+0E53453FD5845899A4.pygtex) [9] [10] [11] [12] [13] [14] [15] [16] [17] [18]
+[19] [20]
+(./_minted-TextMining_Assignment/F751B6EBF6D3B6F81457588C2A296E918E129E4F64B03B
+8F0B2AED0BB08CDC78.pygtex) [21]
+(./_minted-TextMining_Assignment/F2ED6FCA25A7805F20B9A02846AA93134DA8A1DE8B1567
+0E53453FD5845899A4.pygtex) [22] [23] [24] [25] [26] [27] [28] [29] [30]
+[31] [32] [33] [34] [35]pdfTeX warning (ext4): destination with the same identi
+fier (name{main-process-with-prefixed-parameters}) has been already used, dupli
+cate ignored
+&lt;to be read again&gt; 
+                   \relax 
+l.2311 ...{main-process-with-prefixed-parameters}}
+                                                  
+(./_minted-TextMining_Assignment/6A543E0CE7B842BB70D981776A47248C8E129E4F64B03B
+8F0B2AED0BB08CDC78.pygtex) [36]
+(./_minted-TextMining_Assignment/5CFB8A3BB415666CBEC990877F3DF43B4DA8A1DE8B1567
+0E53453FD5845899A4.pygtex)pdfTeX warning (ext4): destination with the same iden
+tifier (name{main-process-with-grid-search-parameters}) has been already used, 
+duplicate ignored
+&lt;to be read again&gt; 
+                   \relax 
+l.2370 ...in-process-with-grid-search-parameters}}
+                                                  
+(./_minted-TextMining_Assignment/64689385C30C14C9F85B86C8E08D72958E129E4F64B03B
+8F0B2AED0BB08CDC78.pygtex) [37]
+(./_minted-TextMining_Assignment/47513D463C92010594B70ABC86461E7B4DA8A1DE8B1567
+0E53453FD5845899A4.pygtex) [38] [39] [40]
+(./_minted-TextMining_Assignment/04B68CF1D3D917262BAC9DDD1A36B8498E129E4F64B03B
+8F0B2AED0BB08CDC78.pygtex) [41]
+(./_minted-TextMining_Assignment/80E22C336211221AEBE238691F5070354DA8A1DE8B1567
+0E53453FD5845899A4.pygtex)
+(./_minted-TextMining_Assignment/0FEDD293BEE6A5B774A5B95788FF84A08E129E4F64B03B
+8F0B2AED0BB08CDC78.pygtex) [42]
+Underfull \hbox (badness 10000) in paragraph at lines 2661--2662
+
+
+(./_minted-TextMining_Assignment/3B8689AFC6CBEFFDECEDC60EE479379B4DA8A1DE8B1567
+0E53453FD5845899A4.pygtex)
+(./_minted-TextMining_Assignment/40B16B66FA62789F4BEDAB84227A38CC8E129E4F64B03B
+8F0B2AED0BB08CDC78.pygtex) [43 &lt;./TextMining_Assignment_files/TextMining_Assign
+ment_23_0.png&gt;]
+(./_minted-TextMining_Assignment/7824800371DEEE1E9BB2B5C4C621E8044DA8A1DE8B1567
+0E53453FD5845899A4.pygtex) [44] (./TextMining_Assignment.aux)
+
+Package rerunfilecheck Warning: File `TextMining_Assignment.out&#39; has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark&#39;.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ )
+(see the transcript file for additional information){/usr/local/texlive/2018/te
+xmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}{/usr/local/texlive/2018/texm
+f-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}{/usr/local/texlive/2018/texmf
+-dist/fonts/enc/dvips/base/8r.enc}&lt;/usr/local/texlive/2018/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmmi10.pfb&gt;&lt;/usr/local/texlive/2018/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmsy10.pfb&gt;&lt;/usr/local/texlive/2018/texmf-dist/fonts/type1
+/public/cm-super/sfit1000.pfb&gt;&lt;/usr/local/texlive/2018/texmf-dist/fonts/type1/p
+ublic/cm-super/sftt1000.pfb&gt;&lt;/usr/local/texlive/2018/texmf-dist/fonts/type1/pub
+lic/cm-super/sftt1095.pfb&gt;&lt;/usr/local/texlive/2018/texmf-dist/fonts/type1/urw/p
+alatino/uplb8a.pfb&gt;&lt;/usr/local/texlive/2018/texmf-dist/fonts/type1/urw/palatino
+/uplr8a.pfb&gt;
+Output written on TextMining_Assignment.pdf (44 pages, 251403 bytes).
+Transcript written on TextMining_Assignment.log.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>[NbConvertApp] Converting notebook TextMining_Assignment.ipynb to latex
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+/Users/nandoide/miniconda3/lib/python3.7/site-packages/nbconvert/utils/pandoc.py:52: RuntimeWarning: You are using an unsupported version of pandoc (2.2.3.2).
+Your version must be at least (1.12.1) but less than (2.0.0).
+Refer to http://pandoc.org/installing.html.
+Continuing with doubts...
+  check_pandoc_version()
+[NbConvertApp] Support files will be in TextMining_Assignment_files/
+[NbConvertApp] Making directory TextMining_Assignment_files
+[NbConvertApp] Writing 103967 bytes to TextMining_Assignment.tex
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
