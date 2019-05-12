@@ -13666,6 +13666,7 @@ The problem is to calculate the metrics for all the combinations of reducers and
 <p>HGS evaluate the best parameters using internally the grid search procedure of sklearn package.</p>
 <p>Once improved the parameters, as a second step we compute the parameters of reducers, and finally the parameters of classifiers, to obtain a final dataframe that contains all the improved metric values and the parameters used.</p>
 <p>Of course it's possible to run more improvements adjusting again vectorizer, reducer or classifiers.</p>
+<p>Another way to improve the results is by changing the hyper-parameters or adding new options. For example, with the <em>2.3.1. Additional stopwords</em> methodologies we can increase the number of stopwords to be considered.</p>
 <p>Also it's possible to launch HGS with all grid search at once:</p>
 <div class="highlight"><pre><span></span><span class="n">param_grid_vectorizer</span> <span class="o">=</span> <span class="p">{</span> 
     <span class="s1">&#39;vect__norm&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;l1&#39;</span><span class="p">,</span> <span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">],</span>
@@ -13702,7 +13703,45 @@ The problem is to calculate the metrics for all the combinations of reducers and
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Best-classifier">Best classifier<a class="anchor-link" href="#Best-classifier">&#182;</a></h2>
+<h2 id="Best-classifier">Best classifier<a class="anchor-link" href="#Best-classifier">&#182;</a></h2><p>After applying a cross-validation grid search for 4 reducers options and then apply the resultant best hyper-parameters to several classifiers, we obtain a great accuracy score, being almost all of the times over 90% and reaching maximum values over 97%.</p>
+<p>The classifiers that performed best were the KNeighborsClassifier(<em>knn</em>), DecisionTreeClassifier (<em>dtree</em>) , and LinearSVC (<em>lsvc</em>). <em>knn</em> accuracy seem to be almost constant, independly of the applied reducer. <em>dtree</em> shows outperforms <em>knn</em> when applying kbest and svd reducers.</p>
+<p>Finally, <em>lsvc</em> outperforms the others when applying either kbest or percentile reduction methodologies and it also obtains the classifier golden medal with an maximum accuracy result of 97.3%</p>
+<p>The best parameters settings for each reducer and classifier combinations are shown in the standard output cell <em>2.5.4</em>. Here we show some of the best parameters guessed:</p>
+
+<pre><code>### Reducer: none   Classifier: lr
+
+Best parameters
+    scaler: None
+    vect__analyzer: 'word'
+    vect__max_df: 1.0
+    vect__max_features: 1000
+    vect__min_df: 0.0
+    vect__ngram_range: (1, 2)
+    vect__norm: 'l2'
+    vect__smooth_idf: True
+    vect__stop_words: None
+    vect__strip_accents: 'unicode'
+    vect__sublinear_tf: True
+
+Accuracy 0.9725111441307578
+
+### Reducer: none   Classifier: svc
+
+Best parameters
+    scaler: None
+    vect__analyzer: 'word'
+    vect__max_df: 0.5
+    vect__max_features: 1000
+    vect__min_df: 0.0
+    vect__ngram_range: (1, 2)
+    vect__norm: None
+    vect__smooth_idf: True
+    vect__stop_words: None
+    vect__strip_accents: 'unicode'
+    vect__sublinear_tf: True
+
+Accuracy 0.9728826151560178</code></pre>
+
 </div>
 </div>
 </div>
@@ -16582,7 +16621,30 @@ not affected
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Best-cluster">Best cluster<a class="anchor-link" href="#Best-cluster">&#182;</a></h2>
+<h2 id="Best-cluster">Best cluster<a class="anchor-link" href="#Best-cluster">&#182;</a></h2><p>When analysing the best number of classes for our dataset (see section <em>3.5 Reference process</em>), we obtain confirm that the best number of clusters is 2, which is consistent with the number of classes we were given initially.</p>
+<p>We performed two sets different sets of the reducers parameters grid and the best combination was the <strong>percentile reducer</strong> with an accuracy of 94.3% as we can see in the heatmaps below. The following hyper-parameters resulted best:</p>
+
+<pre><code>Step 2 Reducer percentile Classifier kmeans
+### Reducer: percentile   Classifier: kmeans
+
+Best parameters
+    clf_kmeans__n_clusters: 2
+    clf_kmeans_norm: None
+    red_percentile__percentile: 10
+    red_percentile__score_func: &lt;function f_classif at 0x1a1db441e0&gt;
+    scaler: None
+    vect__analyzer: 'word'
+    vect__max_df: 1.0
+    vect__max_features: 500
+    vect__min_df: 0.0
+    vect__ngram_range: (1, 2)
+    vect__norm: 'l1'
+    vect__smooth_idf: True
+    vect__stop_words: None
+    vect__strip_accents: 'unicode'
+    vect__sublinear_tf: True</code></pre>
+<p>After the percentile reducer, the next best reducuer was the absence of it (i.e., <em>None</em>) with a 93.9% accuracy and then the <em>svd</em> (92.9%). Both with normalizer deactivated (<em>clf_kmeans_norm: None</em>).</p>
+
 </div>
 </div>
 </div>
@@ -17620,7 +17682,7 @@ weighted avg       0.05      0.06      0.05        33
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Backups">Backups<a class="anchor-link" href="#Backups">&#182;</a></h1>
+<h1 id="Tools">Tools<a class="anchor-link" href="#Tools">&#182;</a></h1>
 </div>
 </div>
 </div>
@@ -17642,6 +17704,45 @@ weighted avg       0.05      0.06      0.05        33
 </div>
 
 </div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pytablewriter</span> <span class="k">import</span> <span class="n">MarkdownTableWriter</span>
+<span class="kn">from</span> <span class="nn">pytablewriter.style</span> <span class="k">import</span> <span class="n">Style</span>
+
+
+<span class="n">copy</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+<span class="n">binary_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;df_metrics_fixed_&#39;</span> <span class="o">+</span> <span class="n">copy</span> <span class="o">+</span> <span class="s1">&#39;.bin&#39;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+<span class="n">df_metrics_fixed</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">binary_file</span><span class="p">)</span>
+<span class="n">binary_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">df_metrics_fixed</span>
+
+<span class="n">writer</span> <span class="o">=</span> <span class="n">MarkdownTableWriter</span><span class="p">()</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">table_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">header_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">value_matrix</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">styles</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Style</span><span class="p">(</span><span class="n">font_weight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">),</span>
+    <span class="n">Style</span><span class="p">(</span><span class="n">font_weight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">),</span>
+    <span class="n">Style</span><span class="p">(),</span>
+    <span class="n">Style</span><span class="p">(),</span>
+    <span class="n">Style</span><span class="p">(),</span>
+    <span class="n">Style</span><span class="p">(),</span>
+    <span class="n">Style</span><span class="p">(</span><span class="n">font_style</span><span class="o">=</span><span class="s2">&quot;italic&quot;</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">writer</span><span class="o">.</span><span class="n">write_table</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -17651,7 +17752,7 @@ weighted avg       0.05      0.06      0.05        33
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[482]:</div>
+<div class="prompt input_prompt">In&nbsp;[486]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span>%%bash
